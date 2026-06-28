@@ -1137,10 +1137,18 @@ function loadTimeMachine() {
     document.querySelector(".modal-content").addEventListener("click", e => e.stopPropagation());
 
     document.getElementById("ticker-switch").addEventListener("change", e => {
+        const prevCoin = state.selected_coin;
+        if (!state.coin_holdings) state.coin_holdings = {};
+        state.coin_holdings[prevCoin] = { qty: state.holding_qty, avg: state.avg_price };
+    
         state.selected_coin = e.target.value;
-        state.holding_qty = 0; state.avg_price = 0;
-        document.getElementById('holding-qty').innerText = 0;
-        document.getElementById('avg-price').innerText = 0;
+        const saved = state.coin_holdings[state.selected_coin];
+        state.holding_qty = saved ? saved.qty : 0;
+        state.avg_price = saved ? saved.avg : 0;
+    
+        document.getElementById('holding-qty').innerText = state.holding_qty;
+        document.getElementById('avg-price').innerText = state.avg_price ? state.avg_price.toLocaleString() : 0;
+    
         if (mainChart) { mainChart.data.labels = []; mainChart.data.datasets.forEach(d => d.data = []); }
         updateChartAndOrderbook(state.current_index);
     });
@@ -1245,9 +1253,12 @@ function loadTimeMachine() {
         }
         mainChart.update('none');
 
-        const rsi = row.rsi || row[\`\${coin}_rsi\`];
+        const rsiKey = Object.keys(row).find(k => k.includes('rsi') || k.includes('RSI'));
+        const rsi = rsiKey ? row[rsiKey] : null;
         const rsiBadge = document.getElementById('rsi-badge');
-        rsiBadge.innerText = rsi ? \`RSI: \${parseFloat(rsi).toFixed(1)}\` : 'RSI: --';
+        rsiBadge.innerText = (rsi && Number(rsi) !== 0) ? \`RSI: \${parseFloat(rsi).toFixed(1)}\` : 'RSI: --';
+        rsiBadge.style.background = rsi >= 70 ? 'rgba(231,76,60,0.2)' : rsi <= 30 ? 'rgba(52,152,219,0.2)' : '#1e1e2e';
+        rsiBadge.style.color = rsi >= 70 ? '#e74c3c' : rsi <= 30 ? '#3498db' : '#aaa';
         rsiBadge.style.background = rsi >= 70 ? 'rgba(231,76,60,0.2)' : rsi <= 30 ? 'rgba(52,152,219,0.2)' : '#1e1e2e';
         rsiBadge.style.color = rsi >= 70 ? '#e74c3c' : rsi <= 30 ? '#3498db' : '#aaa';
 
