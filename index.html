@@ -824,33 +824,112 @@ function calcFG(rsi, rate, volRatio) {
 
 // MBTI
 const MBTI_MAP = {
-  'FOMO': { type:'🔥 FOMO형', name:'충동의 파도타기', desc:'남들 수익에 민감하게 반응하고 급등 시 즉각 매수 충동을 느끼는 유형이에요.', tip:'매수 전 \'지금 사지 않으면 정말 기회를 놓치는가?\'를 한 번 더 물어보세요.', knowledge:'FOMO(Fear Of Missing Out)는 급등 뉴스를 접했을 때 이성보다 감정이 앞서는 현상이에요.', color:'#e74c3c' },
-  '공포': { type:'😱 공황형', name:'공포의 손절왕', desc:'하락 시 패닉셀 충동이 강한 유형이에요.', tip:'하락이 일시적인지 구조적인지 구분하는 연습이 도움이 돼요.', knowledge:'손실 회피 편향(Loss Aversion)은 손실의 고통이 이익의 기쁨보다 2배 크게 느껴지는 심리예요.', color:'#3498db' },
-  '탐욕': { type:'🎰 과신형', name:'근거없는 확신러', desc:'\'이번엔 다르다\'는 과도한 확신을 갖는 유형이에요.', tip:'내 판단이 틀릴 수 있다는 가능성을 항상 열어두세요.', knowledge:'과잉확신 편향(Overconfidence Bias)은 자신의 판단 능력을 실제보다 높게 평가하는 심리예요.', color:'#e67e22' },
-  '냉정': { type:'🧊 냉정형', name:'이성의 투자자', desc:'감정보다 논리로 판단하는 유형이에요.', tip:'냉정함을 유지하면서도 분석 마비를 조심하세요.', knowledge:'분석 마비(Analysis Paralysis)는 너무 많은 정보로 오히려 결정을 못 내리는 현상이에요.', color:'#2ecc71' }
+  'FOMO': {
+    type: '🔥 파도타이머',
+    name: '충동의 파도타기',
+    desc: '급등 소식에 민감하게 반응하고 순간적인 충동으로 결정하는 유형이에요. 행동경제학의 군중심리 편향과 연결돼요.',
+    tip: '매수 전 \'지금 사지 않으면 정말 기회를 놓치는가?\'를 한 번 더 물어보세요.',
+    knowledge: 'FOMO(Fear Of Missing Out)는 급등 뉴스를 접했을 때 이성보다 감정이 앞서는 현상이에요.',
+    color: '#e74c3c'
+  },
+  '공포': {
+    type: '😱 유리멘탈러',
+    name: '공포의 손절왕',
+    desc: '작은 하락에도 심하게 흔들리고 패닉셀 충동이 강한 유형이에요. 손실을 이익보다 2배 크게 느끼는 경향이 있어요.',
+    tip: '하락이 일시적인지 구조적인지 구분하는 연습이 도움이 돼요.',
+    knowledge: '손실 회피 편향(Loss Aversion)은 손실의 고통이 이익의 기쁨보다 약 2배 크게 느껴지는 심리예요.',
+    color: '#3498db'
+  },
+  '탐욕': {
+    type: '🎰 근자감왕',
+    name: '근거없는 확신러',
+    desc: '\'이번엔 무조건 다르다\'는 과도한 자신감으로 리스크를 과소평가하는 유형이에요.',
+    tip: '내 판단이 틀릴 수 있다는 가능성을 항상 열어두세요.',
+    knowledge: '과잉확신 편향(Overconfidence Bias)은 자신의 판단 능력을 실제보다 높게 평가하는 심리예요.',
+    color: '#e67e22'
+  },
+  '냉정': {
+    type: '🧊 돌부처형',
+    name: '이성의 투자자',
+    desc: '어떤 상황에도 흔들리지 않고 감정보다 논리로 판단하는 유형이에요.',
+    tip: '냉정함을 유지하면서도 지나친 분석 마비를 조심하세요.',
+    knowledge: '분석 마비(Analysis Paralysis)는 너무 많은 정보로 오히려 결정을 못 내리는 현상이에요.',
+    color: '#2ecc71'
+  }
 };
 
 function renderMbti() {
   const c = document.getElementById('mbti-content');
-  if (!emotions.length) { c.innerHTML = '<div class="empty-state">아직 분석 기록이 없어요.<br>블랙박스에서 분석해보세요!</div>'; return; }
+  if (!emotions.length) {
+    c.innerHTML = '<div class="empty-state">아직 분석 기록이 없어요.<br>블랙박스에서 분석해보세요!</div>';
+    return;
+  }
   const counts = {};
   emotions.forEach(e => counts[e] = (counts[e]||0)+1);
   const top = Object.keys(counts).sort((a,b) => counts[b]-counts[a])[0];
   const m = MBTI_MAP[top];
   const total = emotions.length;
-  const growth = total >= 10 ? '고급 단계' : total >= 5 ? '중급 단계' : '초급 단계';
+  const growth = total >= 10 ? '고급 단계 🏆' : total >= 5 ? '중급 단계 📈' : '초급 단계 🌱';
+
   const stats = Object.entries(counts).sort((a,b) => b[1]-a[1]).map(([e,cnt]) => {
     const pct = Math.round(cnt/total*100);
-    return `<div class="stat-item"><div class="stat-row"><span class="stat-label">${MBTI_MAP[e].type}</span><span class="stat-val">${cnt}회 (${pct}%)</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${MBTI_MAP[e].color}"></div></div></div>`;
+    const mm = MBTI_MAP[e];
+    return `
+      <div class="stat-item">
+        <div class="stat-row">
+          <span class="stat-label">${mm.type}</span>
+          <span class="stat-val">${cnt}회 (${pct}%)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${pct}%;background:${mm.color};"></div>
+        </div>
+      </div>`;
   }).join('');
+
   c.innerHTML = `
-    <div class="mbti-card"><div class="mbti-type">${m.type}</div><div class="mbti-name">${m.name}</div><div class="mbti-desc">${m.desc}</div></div>
+    <div class="mbti-card" id="mbti-share-card">
+      <div class="mbti-type">${m.type}</div>
+      <div class="mbti-name">${m.name}</div>
+      <div class="mbti-desc">${m.desc}</div>
+      <div style="margin-top:10px;font-size:10px;color:#7F77DD;">총 ${total}회 분석 · ${growth}</div>
+    </div>
     <div class="tip-box">💡 ${m.tip}</div>
-    <div class="card"><div class="card-label">성장 단계</div><div style="font-size:13px;color:#ddd;">${growth}</div><div class="growth-badge" style="margin-top:8px;">총 ${total}회 분석</div></div>
-    <div class="card"><div class="card-label" style="margin-bottom:10px;">감정 통계</div>${stats}</div>
-    <div class="card"><div class="card-label" style="margin-bottom:6px;">📚 투자 심리 지식</div><div style="font-size:13px;color:#ddd;line-height:1.7;">${m.knowledge}</div></div>
-    <button class="btn-outline" onclick="if(confirm('기록을 초기화할까요?')){localStorage.removeItem('bh');localStorage.removeItem('be');analysisHistory=[];emotions=[];renderMbti();}">🗑️ 기록 초기화</button>
+    <div class="card">
+      <div class="card-label" style="margin-bottom:10px;">감정 분포</div>
+      ${stats}
+    </div>
+    <div class="card">
+      <div class="card-label" style="margin-bottom:6px;">📚 투자 심리 지식</div>
+      <div style="font-size:13px;color:#ddd;line-height:1.7;">${m.knowledge}</div>
+    </div>
+    <button class="btn-primary" onclick="shareKakao()" style="background:#FEE500;color:#000;margin-bottom:8px;">
+      💬 카카오톡으로 공유하기
+    </button>
+    <button class="btn-outline" onclick="if(confirm('기록을 초기화할까요?')){localStorage.removeItem('bh');localStorage.removeItem('be');analysisHistory=[];emotions=[];renderMbti();}">
+      🗑️ 기록 초기화
+    </button>
   `;
+}
+
+function shareKakao() {
+  const top = Object.keys(
+    emotions.reduce((c,e) => ({...c,[e]:(c[e]||0)+1}),{})
+  ).sort((a,b) => emotions.filter(x=>x===b).length - emotions.filter(x=>x===a).length)[0];
+  const m = MBTI_MAP[top];
+  const total = emotions.length;
+  const text = `나의 투자자 유형은 "${m.type}" (${m.name})!\n총 ${total}회 분석 결과예요.\n\n${m.desc}\n\n투자 블랙박스에서 내 투자 심리 확인해보세요 👉 https://skyshhackathon-production.up.railway.app`;
+  
+  if (navigator.share) {
+    navigator.share({
+      title: '투자 블랙박스 - 나의 투자자 유형',
+      text: text,
+      url: 'https://skyshhackathon-production.up.railway.app'
+    });
+  } else {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('클립보드에 복사됐어요! 카카오톡에 붙여넣기 해보세요.');
+    });
+  }
 }
 
 function renderHistory() {
