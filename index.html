@@ -421,6 +421,7 @@ async function openCoin(market, name) {
 
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-detail').classList.add('active');
+  document.querySelectorAll('.top-nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('detail-name').textContent = name;
   document.getElementById('detail-price').textContent = '-';
   document.getElementById('chat-messages').innerHTML = '';
