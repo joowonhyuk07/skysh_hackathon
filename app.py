@@ -134,12 +134,14 @@ def analyze_news():
         articles = []
         for entry in feed.entries[:5]:
             articles.append({
-                'title': entry.title,
-                'link': entry.link,
+                'title': entry.get('title', ''),
+                'link': entry.get('link', ''),
                 'published': entry.get('published', ''),
-                'summary': entry.get('summary', '')[:200]
+                'summary': entry.get('summary', '')[:200] if entry.get('summary') else ''
             })
+        print(f"뉴스 {len(articles)}개 가져옴")
     except Exception as e:
+        print(f"뉴스 에러: {e}")
         articles = []
 
     # 뉴스 없으면 Gemini 자체 지식 사용
