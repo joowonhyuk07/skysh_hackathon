@@ -407,20 +407,6 @@ async function loadAllPrices() {
         changeEl.className = 'coin-change ' + (rate > 0 ? 'up' : 'down');
       }
     });
-    // 비트코인으로 전체 시장 분위기 계산
-    const btc = data.find(t => t.market === 'KRW-BTC');
-    if (btc) {
-      const rate = btc.signed_change_rate * 100;
-      let fg = 50;
-      if (rate >= 5) fg = 70; else if (rate >= 2) fg = 60;
-      else if (rate <= -5) fg = 30; else if (rate <= -2) fg = 40;
-      const [label, color] = getFearGreedLabel(fg);
-      document.getElementById('summary-label').textContent = label;
-      document.getElementById('summary-label').style.color = color;
-      document.getElementById('summary-score').textContent = fg;
-      document.getElementById('summary-score').style.color = color;
-      document.getElementById('summary-sub').textContent = `비트코인 기준 ${rate > 0 ? '+' : ''}${rate.toFixed(2)}% 변동`;
-    }
   } catch(e) { console.error(e); }
   setTimeout(loadAllPrices, 5000);
 }
