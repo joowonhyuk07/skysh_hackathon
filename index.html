@@ -9,68 +9,29 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0f; color: #fff; min-height: 100vh; }
 .app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* 헤더 */
 .header { background: #0C447C; padding: 16px 20px 12px; }
 .header-title { font-size: 18px; font-weight: 600; color: #E6F1FB; }
 .header-sub { font-size: 12px; color: #85B7EB; margin-top: 2px; }
-.nav { display: flex; background: #111118; border-bottom: 1px solid #1e1e2e; }
-.nav-item { flex: 1; padding: 10px 0; text-align: center; font-size: 12px; color: #666; cursor: pointer; border-bottom: 2px solid transparent; }
-.nav-item.active { color: #378ADD; border-bottom-color: #378ADD; font-weight: 500; }
-.content { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-.page { display: none; flex-direction: column; gap: 12px; }
+
+/* 상단 탭 (메인 네비) */
+.top-nav { display: flex; background: #111118; border-bottom: 1px solid #1e1e2e; }
+.top-nav-item { flex: 1; padding: 10px 0; text-align: center; font-size: 12px; color: #666; cursor: pointer; border-bottom: 2px solid transparent; }
+.top-nav-item.active { color: #378ADD; border-bottom-color: #378ADD; font-weight: 500; }
+
+/* 콘텐츠 */
+.content { flex: 1; overflow-y: auto; }
+.page { display: none; flex-direction: column; }
 .page.active { display: flex; }
-.detail-price { transition: color 0.5s ease; }
-.price-roller {
-  overflow: hidden;
-  height: 1.2em;
-  display: inline-block;
-}
-.price-roller-inner {
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.price-roller-inner span {
-  height: 1.2em;
-  line-height: 1.2em;
-}
-.news-section { background: #13131f; border: 1px solid #1e1e2e; border-radius: 14px; overflow: hidden; }
-.news-header { padding: 12px 16px; border-bottom: 1px solid #1e1e2e; display: flex; justify-content: space-between; align-items: center; }
-.news-header-title { font-size: 13px; font-weight: 500; color: #aaa; }
-.news-close-btn { background: #1e1e2e; border: none; border-radius: 8px; padding: 5px 10px; font-size: 11px; color: #aaa; cursor: pointer; }
-.news-articles { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
-.news-article-item { background: #0a0a0f; border: 1px solid #1e1e2e; border-radius: 10px; padding: 10px 12px; }
-.news-article-title { font-size: 12px; color: #ddd; line-height: 1.5; margin-bottom: 4px; }
-.news-article-time { font-size: 10px; color: #555; }
-.news-article-link { font-size: 10px; color: #378ADD; text-decoration: none; }
-.news-analysis { padding: 12px 16px; border-top: 1px solid #1e1e2e; font-size: 13px; color: #ddd; line-height: 1.7; }
-.news-loading { padding: 20px; text-align: center; color: #555; font-size: 13px; }
-
-.kakao-share-btn {
-  width: 100%;
-  background: #FEE500;
-  border: none;
-  border-radius: 12px;
-  padding: 14px;
-  color: #000;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-.kakao-share-btn:hover { background: #F5DC00; }
-
-
-
-
-
 
 /* 코인 목록 */
-.section-title { font-size: 13px; font-weight: 500; color: #666; margin-bottom: 4px; }
-.coin-list { display: flex; flex-direction: column; gap: 8px; }
+.coin-list-wrap { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.market-summary { background: #13131f; border: 1px solid #1e1e2e; border-radius: 12px; padding: 12px 14px; margin-bottom: 4px; }
+.market-summary-title { font-size: 11px; color: #666; margin-bottom: 6px; }
+.market-summary-row { display: flex; justify-content: space-between; align-items: center; }
+.market-summary-label { font-size: 13px; color: #fff; font-weight: 500; }
+.market-summary-sub { font-size: 11px; color: #666; margin-top: 2px; }
 .coin-card { background: #13131f; border: 1px solid #1e1e2e; border-radius: 14px; padding: 14px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: border-color 0.2s; }
 .coin-card:hover { border-color: #185FA5; }
 .coin-left { display: flex; flex-direction: column; gap: 4px; flex: 1; }
@@ -79,37 +40,60 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .coin-right { text-align: right; flex-shrink: 0; margin-left: 12px; }
 .coin-price { font-size: 15px; font-weight: 600; color: #fff; }
 .coin-change { font-size: 11px; margin-top: 2px; }
-.up { color: #2ecc71; }
-.down { color: #e74c3c; }
+.up { color: #e74c3c; }
+.down { color: #3498db; }
 .neutral { color: #666; }
 .warn { color: #f39c12; }
+.green { color: #2ecc71; }
 
-/* 상세 화면 */
-.back-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #378ADD; cursor: pointer; padding: 4px 0; background: none; border: none; }
-.detail-header { background: #13131f; border: 1px solid #1e1e2e; border-radius: 14px; padding: 16px; }
-.detail-coin-name { font-size: 14px; color: #888; }
-.detail-price { font-size: 30px; font-weight: 700; color: #fff; margin-top: 4px; }
-.detail-change { font-size: 13px; margin-top: 4px; }
+/* 코인 상세 - 상단 고정 영역 */
+.coin-detail-header { background: #13131f; border-bottom: 1px solid #1e1e2e; padding: 14px 16px 0; }
+.back-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #378ADD; cursor: pointer; background: none; border: none; padding: 0 0 10px; }
+.detail-coin-name { font-size: 13px; color: #888; }
+.detail-price-row { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 2px; }
+.detail-price { font-size: 28px; font-weight: 700; color: #fff; transition: color 0.5s ease; }
+.detail-change { font-size: 14px; }
+.detail-sub-row { display: flex; gap: 12px; margin-bottom: 12px; }
+.detail-sub-item { font-size: 11px; color: #666; }
+.detail-sub-val { color: #aaa; margin-left: 4px; }
+
+/* 하단 탭 (지수/뉴스/감정분석) */
+.bottom-tab { display: flex; background: #111118; border-bottom: 1px solid #1e1e2e; border-top: 1px solid #1e1e2e; }
+.bottom-tab-item { flex: 1; padding: 10px 0; text-align: center; font-size: 12px; color: #666; cursor: pointer; border-bottom: 2px solid transparent; }
+.bottom-tab-item.active { color: #378ADD; border-bottom-color: #378ADD; font-weight: 500; }
+
+/* 탭 콘텐츠 */
+.tab-content { display: none; flex-direction: column; gap: 10px; padding: 14px 16px; }
+.tab-content.active { display: flex; }
 
 /* 차트 */
-.chart-card { background: #13131f; border: 1px solid #1e1e2e; border-radius: 14px; padding: 16px; }
-.chart-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
-.chart-tab { background: #1e1e2e; border: none; border-radius: 8px; padding: 5px 12px; font-size: 11px; color: #666; cursor: pointer; }
-.chart-tab.active { background: #185FA5; color: #fff; }
-.chart-wrap { position: relative; height: 160px; }
+.chart-card { background: #13131f; border: 1px solid #1e1e2e; border-radius: 12px; padding: 12px 14px; }
+.chart-period-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.period-tab { background: #1e1e2e; border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #666; cursor: pointer; }
+.period-tab.active { background: #185FA5; color: #fff; }
+.chart-wrap { position: relative; height: 180px; }
 
-/* 지수 목록 */
-.index-section-title { font-size: 13px; font-weight: 500; color: #aaa; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+/* 지수 섹션 */
+.index-section-title { font-size: 12px; color: #666; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
 .index-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.index-card { background: #13131f; border: 1px solid #1e1e2e; border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: border-color 0.2s; position: relative; }
+.index-card { background: #13131f; border: 1px solid #1e1e2e; border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: border-color 0.2s; }
 .index-card:hover { border-color: #378ADD; }
 .index-name-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .index-name { font-size: 11px; color: #666; font-weight: 500; }
-.index-info { width: 16px; height: 16px; border-radius: 50%; background: #1e1e2e; color: #555; font-size: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-style: italic; font-weight: 700; }
+.index-info-btn { width: 16px; height: 16px; border-radius: 50%; background: #1e1e2e; color: #555; font-size: 9px; display: flex; align-items: center; justify-content: center; font-style: italic; font-weight: 700; border: none; cursor: pointer; }
 .index-value { font-size: 18px; font-weight: 700; color: #fff; }
 .index-status { font-size: 10px; margin-top: 3px; }
 
-/* 팝업 오버레이 */
+/* 호가 간략 */
+.orderbook-mini { background: #13131f; border: 1px solid #1e1e2e; border-radius: 12px; overflow: hidden; }
+.orderbook-header { display: flex; padding: 8px 12px; border-bottom: 1px solid #1e1e2e; }
+.orderbook-header-item { flex: 1; font-size: 10px; color: #666; text-align: center; }
+.orderbook-row { display: flex; padding: 5px 12px; }
+.orderbook-cell { flex: 1; font-size: 11px; text-align: center; }
+.ask-bg { background: rgba(52, 152, 219, 0.08); }
+.bid-bg { background: rgba(231, 76, 60, 0.08); }
+
+/* 팝업 */
 .popup-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); display: flex; align-items: flex-end; justify-content: center; z-index: 200; }
 .popup-overlay.hidden { display: none; }
 .popup-box { background: #13131f; border: 1px solid #1e1e2e; border-radius: 20px 20px 0 0; padding: 24px 20px 48px; width: 100%; max-width: 480px; }
@@ -118,28 +102,37 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .popup-close { background: #1e1e2e; border: none; border-radius: 8px; padding: 6px 12px; color: #aaa; cursor: pointer; font-size: 13px; }
 .popup-tag { display: inline-block; background: #185FA522; color: #378ADD; font-size: 10px; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; }
 .popup-desc { font-size: 14px; color: #ccc; line-height: 1.8; }
-.popup-example { background: #0a0a0f; border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 12px; color: #888; line-height: 1.6; }
+.popup-example { background: #0a0a0f; border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 12px; color: #888; line-height: 1.6; white-space: pre-line; }
+
+/* 뉴스 */
+.news-articles { display: flex; flex-direction: column; gap: 8px; }
+.news-article-item { background: #13131f; border: 1px solid #1e1e2e; border-radius: 10px; padding: 10px 12px; }
+.news-article-title { font-size: 12px; color: #ddd; line-height: 1.5; margin-bottom: 4px; }
+.news-article-link { font-size: 10px; color: #378ADD; text-decoration: none; }
+.news-article-time { font-size: 10px; color: #555; }
+.news-analysis { background: #13131f; border: 1px solid #1e1e2e; border-radius: 12px; padding: 14px 16px; font-size: 13px; color: #ddd; line-height: 1.7; }
+.news-loading { text-align: center; padding: 30px; color: #555; font-size: 13px; }
+.news-btn-load { background: #185FA522; border: 1px solid #185FA5; border-radius: 10px; padding: 10px; font-size: 13px; color: #378ADD; cursor: pointer; width: 100%; }
 
 /* AI 채팅 */
-.chat-section { background: #13131f; border: 1px solid #1e1e2e; border-radius: 14px; overflow: hidden; }
-.chat-header { padding: 12px 16px; border-bottom: 1px solid #1e1e2e; display: flex; justify-content: space-between; align-items: center; }
-.chat-header-title { font-size: 13px; font-weight: 500; color: #aaa; }
-.news-btn { background: #185FA522; border: 1px solid #185FA5; border-radius: 8px; padding: 5px 10px; font-size: 11px; color: #378ADD; cursor: pointer; }
-.chat-messages { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; min-height: 100px; max-height: 280px; overflow-y: auto; }
+.chat-wrap { display: flex; flex-direction: column; gap: 10px; }
 .chat-bubble { max-width: 85%; padding: 10px 13px; border-radius: 14px; font-size: 13px; line-height: 1.6; }
 .chat-ai { background: #1e1e2e; border-radius: 4px 14px 14px 14px; color: #ddd; align-self: flex-start; }
 .chat-ai-label { font-size: 10px; color: #378ADD; margin-bottom: 4px; font-weight: 500; }
 .chat-user { background: #185FA5; border-radius: 14px 4px 14px 14px; color: #fff; align-self: flex-end; }
-.chat-input-area { padding: 10px 12px; border-top: 1px solid #1e1e2e; display: flex; gap: 8px; }
-.chat-input { flex: 1; background: #0a0a0f; border: 1px solid #1e1e2e; border-radius: 10px; padding: 8px 12px; font-size: 13px; color: #fff; outline: none; font-family: inherit; resize: none; line-height: 1.4; }
-.chat-input:focus { border-color: #185FA5; }
-.chat-send { background: #185FA5; border: none; border-radius: 10px; padding: 8px 14px; color: #fff; font-size: 13px; cursor: pointer; white-space: nowrap; }
-.chat-send:disabled { background: #1e1e2e; color: #444; cursor: not-allowed; }
-
-/* 빠른 버튼 */
-.quick-btns { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 10px; }
+.quick-btns { display: flex; flex-wrap: wrap; gap: 6px; }
 .quick-btn { background: #0a0a0f; border: 1px solid #1e1e2e; border-radius: 20px; padding: 6px 12px; font-size: 11px; color: #888; cursor: pointer; transition: all 0.2s; }
 .quick-btn:hover, .quick-btn.selected { border-color: #185FA5; color: #378ADD; background: #185FA511; }
+.chat-input-area { display: flex; gap: 8px; }
+.chat-input { flex: 1; background: #0a0a0f; border: 1px solid #1e1e2e; border-radius: 10px; padding: 8px 12px; font-size: 13px; color: #fff; outline: none; font-family: inherit; resize: none; line-height: 1.4; }
+.chat-input:focus { border-color: #185FA5; }
+.chat-send { background: #185FA5; border: none; border-radius: 10px; padding: 8px 14px; color: #fff; font-size: 13px; cursor: pointer; }
+.chat-send:disabled { background: #1e1e2e; color: #444; cursor: not-allowed; }
+.typing { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+.typing span { width: 6px; height: 6px; background: #378ADD; border-radius: 50%; animation: bounce 1s infinite; }
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
 
 /* MBTI */
 .mbti-card { background: #EEEDFE22; border: 1px solid #534AB744; border-radius: 14px; padding: 20px; text-align: center; }
@@ -147,118 +140,170 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .mbti-name { font-size: 13px; color: #7F77DD; margin-bottom: 10px; }
 .mbti-desc { font-size: 13px; color: #ccc; line-height: 1.6; }
 .tip-box { background: #EAF3DE22; border: 1px solid #639922; border-radius: 12px; padding: 12px 14px; font-size: 13px; color: #97C459; line-height: 1.6; }
+.card { background: #13131f; border: 1px solid #1e1e2e; border-radius: 14px; padding: 14px 16px; }
+.card-label { font-size: 11px; color: #666; margin-bottom: 6px; }
 .stat-item { margin-bottom: 10px; }
 .stat-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
 .stat-label { color: #aaa; }
 .stat-val { color: #fff; font-weight: 500; }
 .progress-bar { height: 4px; background: #1e1e2e; border-radius: 2px; overflow: hidden; }
 .progress-fill { height: 100%; border-radius: 2px; }
-.card { background: #13131f; border: 1px solid #1e1e2e; border-radius: 14px; padding: 14px 16px; }
-.card-label { font-size: 11px; color: #666; margin-bottom: 6px; }
+.growth-badge { display: inline-block; background: #13131f; border: 1px solid #1e1e2e; border-radius: 20px; padding: 4px 12px; font-size: 11px; color: #666; margin-bottom: 8px; }
 .empty-state { text-align: center; padding: 40px 20px; color: #444; font-size: 14px; line-height: 1.8; }
+.btn-primary { width: 100%; background: #185FA5; border: none; border-radius: 12px; padding: 13px; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; }
 .btn-outline { width: 100%; background: transparent; border: 1px solid #1e1e2e; border-radius: 12px; padding: 12px; font-size: 13px; color: #aaa; cursor: pointer; }
-.btn-outline:hover { border-color: #378ADD; color: #378ADD; }
+.kakao-share-btn { width: 100%; background: #FEE500; border: none; border-radius: 12px; padding: 13px; color: #000; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; }
+
+/* 기록 */
 .history-item { background: #13131f; border: 1px solid #1e1e2e; border-radius: 12px; padding: 14px 16px; cursor: pointer; margin-bottom: 8px; }
 .history-body { margin-top: 10px; border-top: 1px solid #1e1e2e; padding-top: 10px; display: none; font-size: 13px; color: #ddd; line-height: 1.6; }
 .history-body.open { display: block; }
 .notice-text { font-size: 11px; color: #444; text-align: center; padding: 4px 0; }
-.typing { display: flex; gap: 4px; align-items: center; }
-.typing span { width: 6px; height: 6px; background: #378ADD; border-radius: 50%; animation: bounce 1s infinite; }
-.typing span:nth-child(2) { animation-delay: 0.2s; }
-.typing span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
-.growth-badge { display: inline-block; background: #13131f; border: 1px solid #1e1e2e; border-radius: 20px; padding: 4px 12px; font-size: 11px; color: #666; margin-bottom: 8px; }
 </style>
 </head>
 <body>
 <div class="app">
+
+  <!-- 헤더 -->
   <div class="header">
     <div class="header-title">📦 투자 블랙박스</div>
     <div class="header-sub">매수 전, 내 감정과 시장을 함께 확인하세요</div>
   </div>
-  <div class="nav">
-    <div class="nav-item active" onclick="showTab('blackbox',this)">블랙박스</div>
-    <div class="nav-item" onclick="showTab('timemachine',this)">타임머신</div>
-    <div class="nav-item" onclick="showTab('mbti',this)">내 유형</div>
-    <div class="nav-item" onclick="showTab('history',this)">기록</div>
+
+  <!-- 상단 네비 -->
+  <div class="top-nav">
+    <div class="top-nav-item active" onclick="showTopTab('blackbox', this)">블랙박스</div>
+    <div class="top-nav-item" onclick="showTopTab('timemachine', this)">타임머신</div>
+    <div class="top-nav-item" onclick="showTopTab('mytype', this)">내 유형</div>
+    <div class="top-nav-item" onclick="showTopTab('history', this)">기록</div>
   </div>
+
+  <!-- 콘텐츠 -->
   <div class="content">
 
-    <!-- 블랙박스 탭 -->
-    <div id="tab-blackbox" class="page active">
-      <div class="section-title">코인을 선택하세요</div>
-      <div class="coin-list" id="coin-list"></div>
+    <!-- 블랙박스 메인 (코인 목록) -->
+    <div id="page-blackbox" class="page active">
+      <div class="coin-list-wrap">
+        <div class="market-summary" id="market-summary">
+          <div class="market-summary-title">오늘 코인 시장 전체 분위기</div>
+          <div class="market-summary-row">
+            <div>
+              <div class="market-summary-label" id="summary-label">불러오는 중...</div>
+              <div class="market-summary-sub" id="summary-sub"></div>
+            </div>
+            <div id="summary-score" style="font-size:24px;font-weight:700;color:#fff;"></div>
+          </div>
+        </div>
+        <div id="coin-list"></div>
+      </div>
     </div>
 
     <!-- 코인 상세 -->
-    <div id="tab-detail" class="page">
-      <button class="back-btn" onclick="goBack()">← 목록으로</button>
-      <div class="detail-header">
+    <div id="page-detail" class="page">
+      <div class="coin-detail-header">
+        <button class="back-btn" onclick="goBack()">← 목록으로</button>
         <div class="detail-coin-name" id="detail-name"></div>
-        <div class="detail-price" id="detail-price">-</div>
-        <div class="detail-change" id="detail-change">-</div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-tabs">
-          <button class="chart-tab active" onclick="changeChartPeriod('days',this)">일</button>
-          <button class="chart-tab" onclick="changeChartPeriod('hours',this)">시간</button>
-          <button class="chart-tab" onclick="changeChartPeriod('minutes',this)">분</button>
+        <div class="detail-price-row">
+          <div class="detail-price" id="detail-price">-</div>
+          <div class="detail-change" id="detail-change">-</div>
         </div>
-        <div class="chart-wrap"><canvas id="price-chart"></canvas></div>
+        <div class="detail-sub-row">
+          <div class="detail-sub-item">고가 <span class="detail-sub-val up" id="detail-high">-</span></div>
+          <div class="detail-sub-item">저가 <span class="detail-sub-val down" id="detail-low">-</span></div>
+          <div class="detail-sub-item">전일 <span class="detail-sub-val" id="detail-prev">-</span></div>
+          <div class="detail-sub-item">체결강도 <span class="detail-sub-val" id="detail-strength">-</span></div>
+        </div>
       </div>
-      <div>
-        <div class="index-section-title">📊 주요 지수 <span style="font-size:11px;color:#555;">클릭하면 설명 봐요</span></div>
-        <div class="index-grid" id="index-grid"></div>
-      </div>
-      <!-- 뉴스 섹션 -->
-<div class="news-section" id="news-section" style="display:none;">
-  <div class="news-header">
-    <div class="news-header-title">📰 최신 뉴스 분석</div>
-    <button class="news-close-btn" onclick="closeNews()">✕ 닫기</button>
-  </div>
-  <div class="news-articles" id="news-articles"></div>
-  <div class="news-analysis" id="news-analysis"></div>
-</div>
 
-<!-- AI 채팅 섹션 -->
-<div class="chat-section">
-  <div class="chat-header">
-    <div class="chat-header-title">🤖 AI 감정 분석</div>
-    <button class="news-btn" onclick="toggleNews()">📰 뉴스 분석</button>
-  </div>
-  <div class="chat-messages" id="chat-messages"></div>
-  <div class="quick-btns">
-    <button class="quick-btn" onclick="selectQuick(this,'뉴스에서 오른다고 봤어요')">뉴스 봤어요</button>
-    <button class="quick-btn" onclick="selectQuick(this,'친구가 샀다고 해서요')">친구 따라서요</button>
-    <button class="quick-btn" onclick="selectQuick(this,'그냥 오를 것 같아요')">그냥 살까요</button>
-    <button class="quick-btn" onclick="selectQuick(this,'떨어져서 지금이 기회 같아요')">저점 같아요</button>
-    <button class="quick-btn" onclick="selectQuick(this,'유튜브에서 추천해서요')">유튜브 봤어요</button>
-  </div>
-  <div class="chat-input-area">
-    <textarea class="chat-input" id="chat-input" rows="2" placeholder="매수 이유를 말해줘요..." onkeydown="handleKey(event)"></textarea>
-    <button class="chat-send" id="chat-send" onclick="sendChat()">전송</button>
-  </div>
-</div>
+      <!-- 하단 탭 -->
+      <div class="bottom-tab">
+        <div class="bottom-tab-item active" onclick="showBottomTab('chart', this)">📈 차트</div>
+        <div class="bottom-tab-item" onclick="showBottomTab('index', this)">📊 지수</div>
+        <div class="bottom-tab-item" onclick="showBottomTab('news', this)">📰 뉴스</div>
+        <div class="bottom-tab-item" onclick="showBottomTab('chat', this)">🤖 감정분석</div>
+      </div>
+
+      <!-- 차트 탭 -->
+      <div id="btab-chart" class="tab-content active">
+        <div class="chart-card">
+          <div class="chart-period-tabs">
+            <button class="period-tab active" onclick="changeChartPeriod('days',this)">일</button>
+            <button class="period-tab" onclick="changeChartPeriod('hours',this)">1시간</button>
+            <button class="period-tab" onclick="changeChartPeriod('minutes',this)">5분</button>
+          </div>
+          <div class="chart-wrap"><canvas id="price-chart"></canvas></div>
+        </div>
+        <div class="index-section-title">📊 주요 지수 요약 <span style="font-size:10px;color:#555;">자세히 보려면 지수 탭으로</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;" id="mini-index"></div>
+      </div>
+
+      <!-- 지수 탭 -->
+      <div id="btab-index" class="tab-content">
+        <div class="index-section-title">📊 시장 지수 <span style="font-size:10px;color:#555;">클릭하면 설명 봐요</span></div>
+        <div class="index-grid" id="index-grid"></div>
+
+        <div class="index-section-title" style="margin-top:4px;">📋 호가 현황 <span style="font-size:10px;color:#555;">매수/매도 잔량이에요</span></div>
+        <div class="orderbook-mini" id="orderbook-mini">
+          <div class="orderbook-header">
+            <div class="orderbook-header-item">잔량(매도)</div>
+            <div class="orderbook-header-item">가격</div>
+            <div class="orderbook-header-item">잔량(매수)</div>
+          </div>
+          <div id="orderbook-rows"></div>
+        </div>
+        <div style="font-size:10px;color:#555;text-align:center;padding:4px;">
+          파란색=팔려는 사람 · 빨간색=사려는 사람
+          <button onclick="showIndexPopup('호가')" style="background:none;border:none;color:#378ADD;font-size:10px;cursor:pointer;">호가가 뭔가요? →</button>
+        </div>
+      </div>
+
+      <!-- 뉴스 탭 -->
+      <div id="btab-news" class="tab-content">
+        <div id="news-content">
+          <button class="news-btn-load" onclick="loadNews()">📰 최신 뉴스 불러오기</button>
+        </div>
+      </div>
+
+      <!-- 감정분석 탭 -->
+      <div id="btab-chat" class="tab-content">
+        <div class="chat-wrap" id="chat-messages"></div>
+        <div class="quick-btns" id="quick-btns">
+          <button class="quick-btn" onclick="selectQuick(this,'뉴스에서 오른다고 봤어요')">뉴스 봤어요</button>
+          <button class="quick-btn" onclick="selectQuick(this,'친구가 샀다고 해서요')">친구 따라서요</button>
+          <button class="quick-btn" onclick="selectQuick(this,'그냥 오를 것 같아요')">그냥 살까요</button>
+          <button class="quick-btn" onclick="selectQuick(this,'떨어져서 지금이 기회 같아요')">저점 같아요</button>
+          <button class="quick-btn" onclick="selectQuick(this,'유튜브에서 추천해서요')">유튜브 봤어요</button>
+        </div>
+        <div class="chat-input-area">
+          <textarea class="chat-input" id="chat-input" rows="2" placeholder="매수 이유를 말해줘요..." onkeydown="handleKey(event)"></textarea>
+          <button class="chat-send" id="chat-send" onclick="sendChat()">전송</button>
+        </div>
+      </div>
     </div>
 
-    <!-- 타임머신 탭 -->
-    <div id="tab-timemachine" class="page">
+    <!-- 타임머신 -->
+    <div id="page-timemachine" class="page">
       <div class="empty-state">⏳<br><br>타임머신 기능 준비 중이에요.</div>
     </div>
 
-    <!-- 내 유형 탭 -->
-    <div id="tab-mbti" class="page">
-      <div id="mbti-content"><div class="empty-state">아직 분석 기록이 없어요.<br>블랙박스에서 분석해보세요!</div></div>
+    <!-- 내 유형 -->
+    <div id="page-mytype" class="page">
+      <div style="padding:16px;" id="mbti-content">
+        <div class="empty-state">아직 분석 기록이 없어요.<br>블랙박스에서 분석해보세요!</div>
+      </div>
     </div>
 
-    <!-- 기록 탭 -->
-    <div id="tab-history" class="page">
-      <div id="history-content"><div class="empty-state">아직 기록이 없어요.</div></div>
+    <!-- 기록 -->
+    <div id="page-history" class="page">
+      <div style="padding:16px;" id="history-content">
+        <div class="empty-state">아직 기록이 없어요.</div>
+      </div>
     </div>
+
   </div>
 </div>
 
-<!-- 지수 설명 팝업 -->
+<!-- 팝업 -->
 <div class="popup-overlay hidden" id="popup-overlay" onclick="closePopup(event)">
   <div class="popup-box">
     <div class="popup-header">
@@ -274,8 +319,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 </div>
 
 <script>
-const GEMINI_API_KEY = "AQ.Ab8RN6LI29ANNvFo3kjrkhGynct9teyzKnjfHTsxUnZp5DJFYA";
 const BACKEND_URL = "https://skyshhackathon-production.up.railway.app";
+
 const COINS = [
   { market: "KRW-BTC", name: "비트코인", symbol: "BTC", desc: "디지털 금. 코인 시장 전체 분위기를 이끌어요." },
   { market: "KRW-ETH", name: "이더리움", symbol: "ETH", desc: "앱스토어 같은 코인. 수많은 서비스가 여기서 돌아가요." },
@@ -288,36 +333,13 @@ const COINS = [
 ];
 
 const INDEX_INFO = {
-  "RSI": {
-    tag: "기술적 지표",
-    desc: "RSI(상대강도지수)는 최근 가격 움직임의 강도를 0~100 사이 숫자로 나타내요. 쉽게 말하면 '이 코인이 얼마나 과열됐는지'를 보여줘요.",
-    example: "💡 RSI 70 이상 → 너무 많이 올랐을 수 있어요 (과매수)\nRSI 30 이하 → 너무 많이 떨어졌을 수 있어요 (과매도)\nRSI 50 근처 → 보통 상태예요"
-  },
-  "거래량 비율": {
-    tag: "시장 활성도",
-    desc: "오늘 거래량이 평소(최근 14일 평균)와 비교해서 얼마나 많은지 보여줘요. 거래량이 갑자기 늘면 큰 움직임이 올 수 있다는 신호예요.",
-    example: "💡 2배 이상 → 평소보다 많은 사람이 사고팔고 있어요\n0.5배 이하 → 거래가 한산해요\n1배 근처 → 평소와 비슷해요"
-  },
-  "52주 위치": {
-    tag: "가격 위치",
-    desc: "지금 가격이 최근 1년 최저가~최고가 사이 어디쯤 있는지 퍼센트로 보여줘요. 지금이 역사적으로 비싼 편인지 싼 편인지 알 수 있어요.",
-    example: "💡 80% 이상 → 1년 중 꽤 비싼 편이에요\n20% 이하 → 1년 중 꽤 싼 편이에요\n50% 근처 → 중간 정도예요"
-  },
-  "매수/매도 압력": {
-    tag: "시장 심리",
-    desc: "지금 이 코인을 사려는 사람(매수)과 팔려는 사람(매도)의 비율이에요. 매수 압력이 높으면 사려는 사람이 더 많다는 뜻이에요.",
-    example: "💡 매수 우세 → 지금 사려는 사람이 더 많아요\n매도 우세 → 지금 팔려는 사람이 더 많아요\n균형 → 비슷비슷해요"
-  },
-  "시장 온도": {
-    tag: "종합 심리 지수",
-    desc: "RSI, 거래량, 등락률을 종합해서 지금 시장이 얼마나 흥분(탐욕) 상태인지, 얼마나 침체(공포) 상태인지 0~100으로 나타낸 지수예요.",
-    example: "💡 75 이상 → 시장이 매우 흥분한 상태예요 (극도의 탐욕)\n25 이하 → 시장이 많이 겁먹은 상태예요 (극도의 공포)\n50 근처 → 중립 상태예요"
-  },
-  "당일 변동폭": {
-    tag: "오늘의 움직임",
-    desc: "오늘 하루 최저가 대비 최고가가 얼마나 차이나는지 보여줘요. 변동폭이 클수록 오늘 가격이 많이 오르내렸다는 뜻이에요.",
-    example: "💡 10% 이상 → 오늘 가격이 많이 움직였어요\n3% 이하 → 오늘은 비교적 안정적이에요"
-  }
+  "RSI": { tag: "기술적 지표", desc: "RSI(상대강도지수)는 최근 가격 움직임의 강도를 0~100으로 나타내요. 고수들이 과열/침체 판단에 가장 많이 쓰는 지표예요.", example: "70 이상 → 과매수 (너무 많이 올랐을 수 있어요)\n30 이하 → 과매도 (너무 많이 떨어졌을 수 있어요)\n50 근처 → 중립 상태예요" },
+  "거래량": { tag: "시장 활성도", desc: "오늘 거래량이 최근 14일 평균과 비교해서 얼마나 많은지예요. 고수들은 거래량으로 큰 움직임을 예측해요.", example: "2배 이상 → 평소보다 훨씬 많이 사고팔고 있어요\n0.5배 이하 → 거래가 한산해요\n1배 근처 → 평소와 비슷해요" },
+  "52주 위치": { tag: "가격 위치", desc: "지금 가격이 최근 1년 최저~최고 사이 어디쯤인지예요. 고수들이 '지금 비싼지 싼지' 판단할 때 봐요.", example: "80% 이상 → 1년 중 꽤 비싼 편이에요\n20% 이하 → 1년 중 꽤 싼 편이에요\n50% 근처 → 중간 가격대예요" },
+  "매수/매도 압력": { tag: "시장 심리", desc: "호가창에서 사려는 물량(매수)과 팔려는 물량(매도)의 비율이에요. 실시간 수급 상황을 보여줘요.", example: "매수 우세 → 지금 사려는 사람이 더 많아요\n매도 우세 → 팔려는 사람이 더 많아요\n균형 → 비슷비슷해요" },
+  "체결강도": { tag: "매수/매도 강도", desc: "실제 체결된 거래에서 매수 체결이 얼마나 강했는지예요. 100% 이상이면 매수가 더 강한 거예요.", example: "150% 이상 → 매수가 매도보다 훨씬 강해요\n100% 근처 → 비슷해요\n50% 이하 → 매도가 훨씬 강해요" },
+  "시장 온도": { tag: "종합 심리 지수", desc: "RSI, 거래량, 등락률을 종합해서 지금 시장이 얼마나 흥분/침체 상태인지 0~100으로 나타낸 지수예요.", example: "75 이상 → 극도의 탐욕 (과열 신호)\n25 이하 → 극도의 공포 (침체 신호)\n50 근처 → 중립 상태예요" },
+  "호가": { tag: "매수/매도 주문", desc: "호가창은 지금 이 코인을 사겠다는 사람들(매수)과 팔겠다는 사람들(매도)의 가격과 수량을 보여줘요. 파란색은 팔려는 사람, 빨간색은 사려는 사람이에요.", example: "잔량이 많다 → 그 가격에서 강한 지지/저항이 있어요\n가격 차이가 크다 → 거래가 활발하지 않아요" }
 };
 
 let currentMarket = "";
@@ -328,18 +350,30 @@ let marketCtx = {};
 let wsConnections = {};
 let analysisHistory = JSON.parse(localStorage.getItem('bh') || '[]');
 let emotions = JSON.parse(localStorage.getItem('be') || '[]');
+let newsLoaded = false;
 
-// 탭 전환
-function showTab(tab, el) {
+// 상단 탭 전환
+function showTopTab(tab, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelectorAll('.top-nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
   if (el) el.classList.add('active');
-  if (tab === 'mbti') renderMbti();
+  if (tab === 'mytype') renderMbti();
   if (tab === 'history') renderHistory();
 }
 
-// 초기 코인 목록 렌더
+// 하단 탭 전환
+function showBottomTab(tab, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.bottom-tab-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('btab-' + tab).classList.add('active');
+  if (el) el.classList.add('active');
+  if (tab === 'chat' && chatHistory.length === 0) {
+    initChat();
+  }
+}
+
+// 메인 코인 목록
 async function renderCoinList() {
   const list = document.getElementById('coin-list');
   list.innerHTML = COINS.map(c => `
@@ -361,6 +395,7 @@ async function loadAllPrices() {
   try {
     const markets = COINS.map(c => c.market).join(',');
     const data = await fetch(`${BACKEND_URL}/api/upbit/ticker?markets=${markets}`).then(r => r.json());
+    let totalFg = 0;
     data.forEach(t => {
       const priceEl = document.getElementById('price-' + t.market);
       const changeEl = document.getElementById('change-' + t.market);
@@ -371,6 +406,20 @@ async function loadAllPrices() {
         changeEl.className = 'coin-change ' + (rate > 0 ? 'up' : 'down');
       }
     });
+    // 비트코인으로 전체 시장 분위기 계산
+    const btc = data.find(t => t.market === 'KRW-BTC');
+    if (btc) {
+      const rate = btc.signed_change_rate * 100;
+      let fg = 50;
+      if (rate >= 5) fg = 70; else if (rate >= 2) fg = 60;
+      else if (rate <= -5) fg = 30; else if (rate <= -2) fg = 40;
+      const [label, color] = getFearGreedLabel(fg);
+      document.getElementById('summary-label').textContent = label;
+      document.getElementById('summary-label').style.color = color;
+      document.getElementById('summary-score').textContent = fg;
+      document.getElementById('summary-score').style.color = color;
+      document.getElementById('summary-sub').textContent = `비트코인 기준 ${rate > 0 ? '+' : ''}${rate.toFixed(2)}% 변동`;
+    }
   } catch(e) { console.error(e); }
   setTimeout(loadAllPrices, 5000);
 }
@@ -380,32 +429,33 @@ async function openCoin(market, name) {
   currentMarket = market;
   currentCoinName = name;
   chatHistory = [];
+  newsLoaded = false;
 
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-detail').classList.add('active');
+  document.getElementById('page-detail').classList.add('active');
   document.getElementById('detail-name').textContent = name;
-  document.getElementById('detail-price').textContent = '불러오는 중...';
-  document.getElementById('index-grid').innerHTML = `
-  <div style="grid-column:1/-1;text-align:center;padding:20px;color:#555;font-size:13px;">
-    📊 시장 데이터 불러오는 중...
-  </div>
-  `;
+  document.getElementById('detail-price').textContent = '-';
   document.getElementById('chat-messages').innerHTML = '';
-  document.getElementById('index-grid').innerHTML = '';
+  document.getElementById('news-content').innerHTML = '<button class="news-btn-load" onclick="loadNews()">📰 최신 뉴스 불러오기</button>';
+  document.getElementById('quick-btns').style.display = 'flex';
+
+  // 하단 탭 초기화
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.bottom-tab-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('btab-chart').classList.add('active');
+  document.querySelectorAll('.bottom-tab-item')[0].classList.add('active');
 
   await loadDetailData(market);
   loadChart(market, 'days');
   startWebSocket(market);
-
-  addAIBubble('안녕하세요! ' + name + ' 관련 궁금한 점이나 매수 이유를 말해줘요. 감정과 시장 상황을 함께 분석해드릴게요. 📊');
 }
 
 function goBack() {
   closeWebSocket();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('tab-blackbox').classList.add('active');
-  document.querySelectorAll('.nav-item')[0].classList.add('active');
+  document.querySelectorAll('.top-nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-blackbox').classList.add('active');
+  document.querySelectorAll('.top-nav-item')[0].classList.add('active');
 }
 
 // 시장 데이터
@@ -425,6 +475,9 @@ async function loadDetailData(market) {
     const chEl = document.getElementById('detail-change');
     chEl.textContent = (rate > 0 ? '▲ +' : '▼ ') + rate + '%';
     chEl.className = 'detail-change ' + (rate > 0 ? 'up' : 'down');
+    document.getElementById('detail-high').textContent = t.high_price.toLocaleString() + '원';
+    document.getElementById('detail-low').textContent = t.low_price.toLocaleString() + '원';
+    document.getElementById('detail-prev').textContent = t.prev_closing_price.toLocaleString() + '원';
 
     const rsi = calcRSI(candles);
     const avgVol = candles.reduce((s,c) => s + c.candle_acc_trade_volume, 0) / candles.length;
@@ -433,71 +486,95 @@ async function loadDetailData(market) {
     const lows = candles.map(c => c.low_price);
     const h52 = Math.max(...highs), l52 = Math.min(...lows);
     const pos52 = h52 !== l52 ? ((price - l52) / (h52 - l52) * 100).toFixed(1) : 50;
+
     const ob = orderbook[0];
     const totalBid = ob.orderbook_units.reduce((s,u) => s + u.bid_size, 0);
     const totalAsk = ob.orderbook_units.reduce((s,u) => s + u.ask_size, 0);
     const bidAskRatio = (totalBid / totalAsk).toFixed(2);
     const pressure = bidAskRatio > 1.2 ? '매수 우세' : bidAskRatio < 0.8 ? '매도 우세' : '균형';
+
+    // 체결강도 계산 (ask_size 대비 bid_size)
+    const strength = (totalBid / (totalBid + totalAsk) * 100).toFixed(1);
+    document.getElementById('detail-strength').textContent = strength + '%';
+    document.getElementById('detail-strength').style.color = strength > 50 ? '#e74c3c' : '#3498db';
+
     const fg = calcFG(rsi, parseFloat(rate), parseFloat(volRatio));
     const todayRange = (((t.high_price - t.low_price) / t.low_price) * 100).toFixed(1);
 
-    marketCtx = { price, rate: parseFloat(rate), rsi, volRatio: parseFloat(volRatio), pos52: parseFloat(pos52), pressure, bidAskRatio: parseFloat(bidAskRatio), fg, todayRange: parseFloat(todayRange) };
+    marketCtx = { price, rate: parseFloat(rate), rsi, volRatio: parseFloat(volRatio), pos52: parseFloat(pos52), pressure, bidAskRatio: parseFloat(bidAskRatio), fg, todayRange: parseFloat(todayRange), strength: parseFloat(strength), high: t.high_price, low: t.low_price, prev: t.prev_closing_price };
 
-    renderIndexGrid(rsi, volRatio, pos52, pressure, bidAskRatio, fg, todayRange);
+    renderIndexGrid(rsi, volRatio, pos52, pressure, bidAskRatio, fg, todayRange, strength);
+    renderOrderbook(ob.orderbook_units.slice(0, 5), price);
+    renderMiniIndex(rsi, fg, strength);
   } catch(e) { console.error(e); }
 }
 
-function renderIndexGrid(rsi, volRatio, pos52, pressure, bidAskRatio, fg, todayRange) {
+function renderMiniIndex(rsi, fg, strength) {
+  const [fgLabel, fgColor] = getFearGreedLabel(fg);
+  document.getElementById('mini-index').innerHTML = `
+    <div class="index-card" onclick="showBottomTab('index', document.querySelectorAll('.bottom-tab-item')[1]); showIndexPopup('RSI')">
+      <div class="index-name">RSI</div>
+      <div class="index-value" style="font-size:15px;">${rsi}</div>
+      <div class="index-status ${rsi >= 70 || rsi <= 30 ? 'warn' : 'green'}">${rsi >= 70 ? '과매수' : rsi <= 30 ? '과매도' : '중립'}</div>
+    </div>
+    <div class="index-card" onclick="showBottomTab('index', document.querySelectorAll('.bottom-tab-item')[1]); showIndexPopup('시장 온도')">
+      <div class="index-name">시장온도</div>
+      <div class="index-value" style="font-size:15px;color:${fgColor};">${fg}</div>
+      <div class="index-status" style="color:${fgColor};">${fgLabel.split(' ')[0]}</div>
+    </div>
+    <div class="index-card" onclick="showBottomTab('index', document.querySelectorAll('.bottom-tab-item')[1]); showIndexPopup('체결강도')">
+      <div class="index-name">체결강도</div>
+      <div class="index-value" style="font-size:15px;">${strength}%</div>
+      <div class="index-status ${strength > 50 ? 'up' : 'down'}">${strength > 60 ? '매수 강세' : strength < 40 ? '매도 강세' : '균형'}</div>
+    </div>
+  `;
+}
+
+function renderIndexGrid(rsi, volRatio, pos52, pressure, bidAskRatio, fg, todayRange, strength) {
   const ratio = parseFloat(bidAskRatio);
+  const [fgLabel, fgColor] = getFearGreedLabel(fg);
+
   const indices = [
-    {
-      key: "RSI",
-      value: rsi,
-      status: rsi >= 70 ? '⚠️ 과매수' : rsi <= 30 ? '⚠️ 과매도' : '✅ 중립',
-      statusClass: rsi >= 70 || rsi <= 30 ? 'warn' : 'up'
-    },
-    {
-      key: "거래량 비율",
-      value: volRatio + '배',
-      status: volRatio >= 2 ? '🔥 평소보다 많음' : volRatio <= 0.5 ? '😴 한산함' : '📊 보통',
-      statusClass: volRatio >= 2 ? 'warn' : 'neutral'
-    },
-    {
-      key: "52주 위치",
-      value: pos52 + '%',
-      status: pos52 >= 80 ? '📈 고점 근처' : pos52 <= 20 ? '📉 저점 근처' : '📊 중간',
-      statusClass: pos52 >= 80 ? 'warn' : pos52 <= 20 ? 'up' : 'neutral'
-    },
-    {
-      key: "매수/매도 압력",
-      value: pressure,
-      status: ratio > 1.2 ? '🟢 사려는 사람 많음' : ratio < 0.8 ? '🔴 팔려는 사람 많음' : '⚖️ 균형',
-      statusClass: ratio > 1.2 ? 'up' : ratio < 0.8 ? 'down' : 'neutral'
-    },
-    {
-      key: "시장 온도",
-      value: fg + '/100',
-      status: fg >= 75 ? '🔴 극도의 탐욕' : fg >= 55 ? '🟠 탐욕' : fg >= 45 ? '🟡 중립' : fg >= 25 ? '🔵 공포' : '🟣 극도의 공포',
-      statusClass: fg >= 55 ? 'warn' : fg <= 25 ? 'down' : 'neutral'
-    },
-    {
-      key: "당일 변동폭",
-      value: todayRange + '%',
-      status: todayRange >= 10 ? '⚡ 많이 움직임' : todayRange <= 3 ? '😴 안정적' : '📊 보통',
-      statusClass: todayRange >= 10 ? 'warn' : 'neutral'
-    }
+    { key: "RSI", value: rsi, status: rsi >= 70 ? '⚠️ 과매수' : rsi <= 30 ? '⚠️ 과매도' : '✅ 중립', cls: rsi >= 70 || rsi <= 30 ? 'warn' : 'green' },
+    { key: "체결강도", value: strength + '%', status: strength > 60 ? '🔴 매수 강세' : strength < 40 ? '🔵 매도 강세' : '⚖️ 균형', cls: strength > 60 ? 'up' : strength < 40 ? 'down' : 'neutral' },
+    { key: "거래량", value: volRatio + '배', status: volRatio >= 2 ? '🔥 평소보다 많음' : volRatio <= 0.5 ? '😴 한산함' : '📊 보통', cls: volRatio >= 2 ? 'warn' : 'neutral' },
+    { key: "52주 위치", value: pos52 + '%', status: pos52 >= 80 ? '📈 고점 근처' : pos52 <= 20 ? '📉 저점 근처' : '📊 중간', cls: pos52 >= 80 ? 'warn' : pos52 <= 20 ? 'green' : 'neutral' },
+    { key: "매수/매도 압력", value: pressure, status: ratio > 1.2 ? '🟢 사려는 사람 많음' : ratio < 0.8 ? '🔴 팔려는 사람 많음' : '⚖️ 균형', cls: ratio > 1.2 ? 'up' : ratio < 0.8 ? 'down' : 'neutral' },
+    { key: "시장 온도", value: fg + '/100', status: fgLabel, cls: fg >= 55 ? 'warn' : fg <= 25 ? 'down' : 'neutral' },
   ];
 
   document.getElementById('index-grid').innerHTML = indices.map(idx => `
     <div class="index-card" onclick="showIndexPopup('${idx.key}')">
       <div class="index-name-row">
         <div class="index-name">${idx.key}</div>
-        <div class="index-info">i</div>
+        <button class="index-info-btn">i</button>
       </div>
       <div class="index-value">${idx.value}</div>
-      <div class="index-status ${idx.statusClass}">${idx.status}</div>
+      <div class="index-status ${idx.cls}">${idx.status}</div>
     </div>
   `).join('');
+}
+
+function renderOrderbook(units, currentPrice) {
+  const askUnits = [...units].reverse();
+  const bidUnits = units;
+
+  let html = '';
+  askUnits.forEach(u => {
+    html += `<div class="orderbook-row ask-bg">
+      <div class="orderbook-cell down">${u.ask_size.toFixed(2)}</div>
+      <div class="orderbook-cell" style="font-weight:600;">${u.ask_price.toLocaleString()}</div>
+      <div class="orderbook-cell" style="color:#555;">-</div>
+    </div>`;
+  });
+  bidUnits.forEach(u => {
+    html += `<div class="orderbook-row bid-bg">
+      <div class="orderbook-cell" style="color:#555;">-</div>
+      <div class="orderbook-cell" style="font-weight:600;">${u.bid_price.toLocaleString()}</div>
+      <div class="orderbook-cell up">${u.bid_size.toFixed(2)}</div>
+    </div>`;
+  });
+  document.getElementById('orderbook-rows').innerHTML = html;
 }
 
 // 지수 팝업
@@ -510,14 +587,8 @@ function showIndexPopup(key) {
   document.getElementById('popup-example').textContent = info.example;
   document.getElementById('popup-overlay').classList.remove('hidden');
 }
-
-function closePopup(e) {
-  if (e.target.id === 'popup-overlay') closePopupDirect();
-}
-
-function closePopupDirect() {
-  document.getElementById('popup-overlay').classList.add('hidden');
-}
+function closePopup(e) { if (e.target.id === 'popup-overlay') closePopupDirect(); }
+function closePopupDirect() { document.getElementById('popup-overlay').classList.add('hidden'); }
 
 // 차트
 async function loadChart(market, period) {
@@ -534,133 +605,97 @@ async function loadChart(market, period) {
       if (period === 'days') return (dt.getMonth()+1) + '/' + dt.getDate();
       return dt.getHours() + ':' + String(dt.getMinutes()).padStart(2,'0');
     });
-    const prices = reversed.map(d => d.trade_price);
 
     if (chartInstance) chartInstance.destroy();
     const ctx = document.getElementById('price-chart').getContext('2d');
-    chartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          data: prices,
-          borderColor: '#378ADD',
-          backgroundColor: 'rgba(55,138,221,0.1)',
-          borderWidth: 2,
-          pointRadius: 0,
-          fill: true,
-          tension: 0.3
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: '#555', maxTicksLimit: 6, font: { size: 10 } }, grid: { color: '#1e1e2e' } },
-          y: { ticks: { color: '#555', font: { size: 10 }, callback: v => (v/1000000).toFixed(1) + 'M' }, grid: { color: '#1e1e2e' } }
+
+    if (period === 'days') {
+      // 캔들차트
+      const candleData = reversed.map(d => ({ x: d.candle_date_time_kst, o: d.opening_price, h: d.high_price, l: d.low_price, c: d.trade_price }));
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: '캔들',
+            data: reversed.map(d => [d.opening_price, d.trade_price]),
+            backgroundColor: reversed.map(d => d.trade_price >= d.opening_price ? 'rgba(231,76,60,0.8)' : 'rgba(52,152,219,0.8)'),
+            borderColor: reversed.map(d => d.trade_price >= d.opening_price ? '#e74c3c' : '#3498db'),
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#555', maxTicksLimit: 8, font: { size: 9 } }, grid: { color: '#1e1e2e' } },
+            y: { ticks: { color: '#555', font: { size: 9 }, callback: v => (v/1000000).toFixed(1) + 'M' }, grid: { color: '#1e1e2e' } }
+          }
         }
-      }
-    });
+      });
+    } else {
+      // 선 그래프
+      const prices = reversed.map(d => d.trade_price);
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets: [{ data: prices, borderColor: '#378ADD', backgroundColor: 'rgba(55,138,221,0.1)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.3 }] },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#555', maxTicksLimit: 6, font: { size: 9 } }, grid: { color: '#1e1e2e' } },
+            y: { ticks: { color: '#555', font: { size: 9 }, callback: v => (v/1000000).toFixed(1) + 'M' }, grid: { color: '#1e1e2e' } }
+          }
+        }
+      });
+    }
   } catch(e) { console.error(e); }
 }
 
 function changeChartPeriod(period, btn) {
-  document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   loadChart(currentMarket, period);
 }
 
-// WebSocket 실시간
+// WebSocket
 function startWebSocket(market) {
   closeWebSocket();
   try {
     const ws = new WebSocket('wss://api.upbit.com/websocket/v1');
-    ws.onopen = () => {
-      ws.send(JSON.stringify([
-        { ticket: 'blackbox' },
-        { type: 'ticker', codes: [market] }
-      ]));
-    };
+    ws.onopen = () => ws.send(JSON.stringify([{ ticket: 'blackbox' }, { type: 'ticker', codes: [market] }]));
     ws.onmessage = async (e) => {
       const buf = await e.data.arrayBuffer();
-      const text = new TextDecoder().decode(buf);
-      const data = JSON.parse(text);
+      const data = JSON.parse(new TextDecoder().decode(buf));
       if (data.type === 'ticker') {
-      const price = data.trade_price;
-      const rate = (data.signed_change_rate * 100).toFixed(2);
-  
-      // 롤링 애니메이션
-      const priceEl = document.getElementById('detail-price');
-      const oldPrice = parseInt(priceEl.dataset.raw || price);
-      priceEl.dataset.raw = price;
-  
-      const formatted = price.toLocaleString() + '원';
-      const oldFormatted = oldPrice.toLocaleString() + '원';
-  
-      priceEl.innerHTML = `
-        <div class="price-roller">
-          <div class="price-roller-inner" id="price-roller-inner">
-            <span>${formatted}</span>
-            <span>${oldFormatted}</span>
-          </div>
-        </div>
-      `;
-  
-      // 아래서 위로 올라오는 애니메이션
-      const inner = document.getElementById('price-roller-inner');
-      inner.style.transform = 'translateY(-1.2em)';
-      setTimeout(() => {
-        inner.style.transition = 'none';
-        inner.style.transform = 'translateY(0)';
-        inner.innerHTML = `<span>${formatted}</span><span></span>`;
-      }, 400);
-  
-      // 색상 변화
-      priceEl.style.color = price > oldPrice ? '#2ecc71' : price < oldPrice ? '#e74c3c' : '#fff';
-      setTimeout(() => { priceEl.style.color = '#fff'; }, 1000);
-  
-      // 등락률 업데이트
-      const chEl = document.getElementById('detail-change');
-      chEl.textContent = (rate > 0 ? '▲ +' : '▼ ') + rate + '%';
-      chEl.className = 'detail-change ' + (rate > 0 ? 'up' : 'down');
-  
-      marketCtx.price = price;
-      marketCtx.rate = parseFloat(rate);
-    }
+        const price = data.trade_price;
+        const rate = (data.signed_change_rate * 100).toFixed(2);
+        const priceEl = document.getElementById('detail-price');
+        const oldPrice = parseInt(priceEl.dataset.raw || 0);
+        priceEl.dataset.raw = price;
+        priceEl.style.color = price > oldPrice ? '#e74c3c' : price < oldPrice ? '#3498db' : '#fff';
+        priceEl.textContent = price.toLocaleString() + '원';
+        setTimeout(() => { priceEl.style.color = '#fff'; }, 1000);
+        const chEl = document.getElementById('detail-change');
+        chEl.textContent = (rate > 0 ? '▲ +' : '▼ ') + rate + '%';
+        chEl.className = 'detail-change ' + (rate > 0 ? 'up' : 'down');
+        marketCtx.price = price;
+        marketCtx.rate = parseFloat(rate);
+      }
     };
     ws.onerror = () => {};
     wsConnections['main'] = ws;
   } catch(e) {}
 }
-
 function closeWebSocket() {
   Object.values(wsConnections).forEach(ws => { try { ws.close(); } catch(e){} });
   wsConnections = {};
 }
 
-// 뉴스 분석
-function toggleNews() {
-  const newsSection = document.getElementById('news-section');
-  if (newsSection.style.display === 'none') {
-    newsSection.style.display = 'block';
-    analyzeNews();
-  } else {
-    newsSection.style.display = 'none';
-  }
-}
-
-function closeNews() {
-  document.getElementById('news-section').style.display = 'none';
-}
-
-async function analyzeNews() {
-  const articlesEl = document.getElementById('news-articles');
-  const analysisEl = document.getElementById('news-analysis');
-
-  articlesEl.innerHTML = '<div class="news-loading">📰 최신 뉴스 불러오는 중...</div>';
-  analysisEl.innerHTML = '';
-
+// 뉴스
+async function loadNews() {
+  const newsContent = document.getElementById('news-content');
+  newsContent.innerHTML = '<div class="news-loading">📰 최신 뉴스 불러오는 중...</div>';
   try {
     const res = await fetch(`${BACKEND_URL}/api/news`, {
       method: 'POST',
@@ -668,31 +703,33 @@ async function analyzeNews() {
       body: JSON.stringify({ coin: currentCoinName, context: marketCtx })
     });
     const data = await res.json();
-
-    // 기사 목록 표시
+    let html = '<div class="news-articles">';
     if (data.articles && data.articles.length > 0) {
-      articlesEl.innerHTML = data.articles.map(a => `
+      html += data.articles.map(a => `
         <div class="news-article-item">
           <div class="news-article-title">${a.title}</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
-            <div class="news-article-time">${a.published ? new Date(a.published).toLocaleDateString('ko-KR') : ''}</div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span class="news-article-time">${a.published ? new Date(a.published).toLocaleDateString('ko-KR') : ''}</span>
             <a class="news-article-link" href="${a.link}" target="_blank">기사 보기 →</a>
           </div>
-        </div>
-      `).join('');
-    } else {
-      articlesEl.innerHTML = '<div class="news-loading">최신 기사를 찾지 못했어요.</div>';
+        </div>`).join('');
     }
-
-    // AI 분석 표시
-    analysisEl.innerHTML = data.result.replace(/\n/g, '<br>').replace(/##/g, '<br><strong>').replace(/\*\*/g, '');
-
+    html += '</div>';
+    if (data.result) {
+      html += `<div class="news-analysis">${data.result.replace(/\n/g,'<br>').replace(/##\s*/g,'<br><strong>').replace(/\*\*/g,'')}</div>`;
+    }
+    newsContent.innerHTML = html;
+    newsLoaded = true;
   } catch(e) {
-    articlesEl.innerHTML = '<div class="news-loading">뉴스를 불러오지 못했어요.</div>';
+    newsContent.innerHTML = '<div class="news-loading">뉴스를 불러오지 못했어요.</div>';
   }
 }
 
 // 채팅
+function initChat() {
+  addAIBubble(`안녕하세요! ${currentCoinName} 어떤 이유로 관심 가지셨어요? 편하게 말씀해줘요 😊`);
+}
+
 function selectQuick(btn, text) {
   document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
@@ -708,107 +745,48 @@ async function sendChat() {
   if (!input) return;
   document.getElementById('chat-input').value = '';
   document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('selected'));
-  if (chatHistory.length > 0) {
-    document.querySelector('.quick-btns').style.display = 'none';
-  }
+  if (chatHistory.length > 0) document.getElementById('quick-btns').style.display = 'none';
   addUserBubble(input);
   document.getElementById('chat-send').disabled = true;
 
-  const ctx = marketCtx;
-  const systemContext = `
-너는 코인 투자 초보자를 위한 감정 코치야.
-현재 ${currentCoinName} 시장 상황:
-- 현재가: ${ctx.price?.toLocaleString()}원 (오늘 ${ctx.rate}% 변동)
-- RSI: ${ctx.rsi} (${ctx.rsi >= 70 ? '과매수' : ctx.rsi <= 30 ? '과매도' : '중립'})
-- 거래량: 평소 ${ctx.volRatio}배
-- 매수/매도 압력: ${ctx.pressure}
-- 52주 위치: ${ctx.pos52}%
-- 시장 온도: ${ctx.fg}/100
+  chatHistory.push({ role: 'user', content: input });
 
-규칙:
-- 투자 권유, 매수/매도 추천 절대 금지
-- 공감하는 톤으로 감정 분석
-- 시장 데이터와 연결해서 설명
-- 초보자 언어로 쉽게
-- 1~2번 되물어서 스스로 생각하게 만들기
-- 전문 용어는 괄호로 설명
+  const typingEl = addTyping();
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input, coin: currentCoinName, context: marketCtx, history: chatHistory.slice(-10) })
+    });
+    const data = await res.json();
+    typingEl.remove();
+    const text = data.result || '';
+    const emotion = data.emotion || '냉정';
+    const cleaned = text.replace(/\[EMOTION:[^\]]+\]/g, '').trim();
+    addAIBubble(cleaned);
+    chatHistory.push({ role: 'assistant', content: cleaned });
 
-첫 줄에 반드시: [EMOTION:FOMO] 또는 [EMOTION:공포] 또는 [EMOTION:탐욕] 또는 [EMOTION:냉정]
-`;
-  chatHistory.push({ role: 'user', parts: [{ text: systemContext + '\n\n사용자: ' + input }] });
-  const response = await callGemini(null, true);
-
-  if (response) {
-    const match = response.match(/\[EMOTION:(FOMO|공포|탐욕|냉정)\]/);
-    if (match) {
-      const emotion = match[1];
-      emotions.push(emotion);
-      analysisHistory.push({
-        coin: currentCoinName, input, emotion,
-        time: new Date().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' })
-      });
-      localStorage.setItem('bh', JSON.stringify(analysisHistory));
-      localStorage.setItem('be', JSON.stringify(emotions));
-    }
+    emotions.push(emotion);
+    analysisHistory.push({ coin: currentCoinName, input, emotion, time: new Date().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) });
+    localStorage.setItem('bh', JSON.stringify(analysisHistory));
+    localStorage.setItem('be', JSON.stringify(emotions));
+  } catch(e) {
+    typingEl.remove();
+    addAIBubble('잠시 오류가 났어요. 다시 시도해줘요!');
   }
   document.getElementById('chat-send').disabled = false;
 }
 
-async function callGemini(prompt, useHistory) {
-  const typingEl = addTyping();
-  try {
-    const body = {
-      input: prompt || document.getElementById('chat-input').value,
-      coin: currentCoinName,
-      context: marketCtx,
-      history: useHistory ? chatHistory.map(h => ({
-        role: h.role,
-        content: h.parts[0].text
-      })) : []
-    };
-    const res = await fetch(`${BACKEND_URL}/api/analyze`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const data = await res.json();
-    const text = data.result;
-    typingEl.remove();
-    const cleaned = text.replace(/\[EMOTION:[^\]]+\]/g, '').trim();
-    addAIBubble(cleaned);
-    if (useHistory) chatHistory.push({ role: 'model', parts: [{ text }] });
-    if (data.emotion) {
-      emotions.push(data.emotion);
-      analysisHistory.push({
-        coin: currentCoinName,
-        input: prompt || '',
-        emotion: data.emotion,
-        time: new Date().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' })
-      });
-      localStorage.setItem('bh', JSON.stringify(analysisHistory));
-      localStorage.setItem('be', JSON.stringify(emotions));
-    }
-    return text;
-  } catch(e) {
-    typingEl.remove();
-    addAIBubble('잠시 오류가 났어요. 다시 시도해줘요!');
-    return null;
-  }
-}
-
-function typeWriter(el, text, speed = 15) {
-  const cleaned = text.replace(/\[EMOTION:[^\]]+\]/g, '').trim();
+function typeWriter(el, text, speed = 12) {
   let i = 0;
   el.innerHTML = '';
   const interval = setInterval(() => {
-    if (i < cleaned.length) {
-      el.innerHTML += cleaned[i] === '\n' ? '<br>' : cleaned[i];
+    if (i < text.length) {
+      el.innerHTML += text[i] === '\n' ? '<br>' : text[i];
       i++;
       const msgs = document.getElementById('chat-messages');
       msgs.scrollTop = msgs.scrollHeight;
-    } else {
-      clearInterval(interval);
-    }
+    } else clearInterval(interval);
   }, speed);
 }
 
@@ -816,9 +794,8 @@ function addAIBubble(text) {
   const el = document.createElement('div');
   el.innerHTML = `<div class="chat-ai-label">🤖 블랙</div><div class="chat-ai-text"></div>`;
   el.className = 'chat-bubble chat-ai';
-  const msgs = document.getElementById('chat-messages');
-  msgs.appendChild(el);
-  msgs.scrollTop = msgs.scrollHeight;
+  document.getElementById('chat-messages').appendChild(el);
+  document.getElementById('chat-messages').scrollTop = 99999;
   typeWriter(el.querySelector('.chat-ai-text'), text);
 }
 
@@ -826,18 +803,16 @@ function addUserBubble(text) {
   const el = document.createElement('div');
   el.textContent = text;
   el.className = 'chat-bubble chat-user';
-  const msgs = document.getElementById('chat-messages');
-  msgs.appendChild(el);
-  msgs.scrollTop = msgs.scrollHeight;
+  document.getElementById('chat-messages').appendChild(el);
+  document.getElementById('chat-messages').scrollTop = 99999;
 }
 
 function addTyping() {
   const el = document.createElement('div');
   el.innerHTML = `<div class="chat-ai-label">🤖 블랙</div><div class="typing"><span></span><span></span><span></span></div>`;
   el.className = 'chat-bubble chat-ai';
-  const msgs = document.getElementById('chat-messages');
-  msgs.appendChild(el);
-  msgs.scrollTop = msgs.scrollHeight;
+  document.getElementById('chat-messages').appendChild(el);
+  document.getElementById('chat-messages').scrollTop = 99999;
   return el;
 }
 
@@ -866,133 +841,76 @@ function calcFG(rsi, rate, volRatio) {
   return Math.max(0, Math.min(100, Math.round(s)));
 }
 
+function getFearGreedLabel(score) {
+  if (score >= 75) return ['극도의 탐욕 🔴', '#e74c3c'];
+  if (score >= 55) return ['탐욕 🟠', '#e67e22'];
+  if (score >= 45) return ['중립 🟡', '#f39c12'];
+  if (score >= 25) return ['공포 🔵', '#3498db'];
+  return ['극도의 공포 🟣', '#9b59b6'];
+}
+
 // MBTI
 const MBTI_MAP = {
-  'FOMO': {
-    type: '🔥 파도타이머',
-    name: '충동의 파도타기',
-    desc: '급등 소식에 민감하게 반응하고 순간적인 충동으로 결정하는 유형이에요. 행동경제학의 군중심리 편향과 연결돼요.',
-    tip: '매수 전 \'지금 사지 않으면 정말 기회를 놓치는가?\'를 한 번 더 물어보세요.',
-    knowledge: 'FOMO(Fear Of Missing Out)는 급등 뉴스를 접했을 때 이성보다 감정이 앞서는 현상이에요.',
-    color: '#e74c3c'
-  },
-  '공포': {
-    type: '😱 유리멘탈러',
-    name: '공포의 손절왕',
-    desc: '작은 하락에도 심하게 흔들리고 패닉셀 충동이 강한 유형이에요. 손실을 이익보다 2배 크게 느끼는 경향이 있어요.',
-    tip: '하락이 일시적인지 구조적인지 구분하는 연습이 도움이 돼요.',
-    knowledge: '손실 회피 편향(Loss Aversion)은 손실의 고통이 이익의 기쁨보다 약 2배 크게 느껴지는 심리예요.',
-    color: '#3498db'
-  },
-  '탐욕': {
-    type: '🎰 근자감왕',
-    name: '근거없는 확신러',
-    desc: '\'이번엔 무조건 다르다\'는 과도한 자신감으로 리스크를 과소평가하는 유형이에요.',
-    tip: '내 판단이 틀릴 수 있다는 가능성을 항상 열어두세요.',
-    knowledge: '과잉확신 편향(Overconfidence Bias)은 자신의 판단 능력을 실제보다 높게 평가하는 심리예요.',
-    color: '#e67e22'
-  },
-  '냉정': {
-    type: '🧊 돌부처형',
-    name: '이성의 투자자',
-    desc: '어떤 상황에도 흔들리지 않고 감정보다 논리로 판단하는 유형이에요.',
-    tip: '냉정함을 유지하면서도 지나친 분석 마비를 조심하세요.',
-    knowledge: '분석 마비(Analysis Paralysis)는 너무 많은 정보로 오히려 결정을 못 내리는 현상이에요.',
-    color: '#2ecc71'
-  }
+  'FOMO': { type:'🔥 파도타이머', name:'충동의 파도타기', desc:'급등 소식에 민감하게 반응하고 순간적인 충동으로 결정하는 유형이에요.', tip:'매수 전 \'지금 사지 않으면 정말 기회를 놓치는가?\'를 한 번 더 물어보세요.', knowledge:'FOMO(Fear Of Missing Out)는 급등 뉴스를 접했을 때 이성보다 감정이 앞서는 현상이에요.', color:'#e74c3c' },
+  '공포': { type:'😱 유리멘탈러', name:'공포의 손절왕', desc:'작은 하락에도 심하게 흔들리고 패닉셀 충동이 강한 유형이에요.', tip:'하락이 일시적인지 구조적인지 구분하는 연습이 도움이 돼요.', knowledge:'손실 회피 편향(Loss Aversion)은 손실의 고통이 이익의 기쁨보다 약 2배 크게 느껴지는 심리예요.', color:'#3498db' },
+  '탐욕': { type:'🎰 근자감왕', name:'근거없는 확신러', desc:'\'이번엔 무조건 다르다\'는 과도한 자신감으로 리스크를 과소평가하는 유형이에요.', tip:'내 판단이 틀릴 수 있다는 가능성을 항상 열어두세요.', knowledge:'과잉확신 편향(Overconfidence Bias)은 자신의 판단 능력을 실제보다 높게 평가하는 심리예요.', color:'#e67e22' },
+  '냉정': { type:'🧊 돌부처형', name:'이성의 투자자', desc:'어떤 상황에도 흔들리지 않고 감정보다 논리로 판단하는 유형이에요.', tip:'냉정함을 유지하면서도 지나친 분석 마비를 조심하세요.', knowledge:'분석 마비(Analysis Paralysis)는 너무 많은 정보로 오히려 결정을 못 내리는 현상이에요.', color:'#2ecc71' }
 };
 
 function renderMbti() {
   const c = document.getElementById('mbti-content');
-  if (!emotions.length) {
-    c.innerHTML = '<div class="empty-state">아직 분석 기록이 없어요.<br>블랙박스에서 분석해보세요!</div>';
-    return;
-  }
+  if (!emotions.length) { c.innerHTML = '<div class="empty-state">아직 분석 기록이 없어요.<br>블랙박스에서 분석해보세요!</div>'; return; }
   const counts = {};
   emotions.forEach(e => counts[e] = (counts[e]||0)+1);
   const top = Object.keys(counts).sort((a,b) => counts[b]-counts[a])[0];
   const m = MBTI_MAP[top];
   const total = emotions.length;
   const growth = total >= 10 ? '고급 단계 🏆' : total >= 5 ? '중급 단계 📈' : '초급 단계 🌱';
-
   const stats = Object.entries(counts).sort((a,b) => b[1]-a[1]).map(([e,cnt]) => {
     const pct = Math.round(cnt/total*100);
     const mm = MBTI_MAP[e];
-    return `
-      <div class="stat-item">
-        <div class="stat-row">
-          <span class="stat-label">${mm.type}</span>
-          <span class="stat-val">${cnt}회 (${pct}%)</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:${pct}%;background:${mm.color};"></div>
-        </div>
-      </div>`;
+    return `<div class="stat-item"><div class="stat-row"><span class="stat-label">${mm.type}</span><span class="stat-val">${cnt}회 (${pct}%)</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${mm.color};"></div></div></div>`;
   }).join('');
 
   c.innerHTML = `
-    <div class="mbti-card" id="mbti-share-card">
-      <div class="mbti-type">${m.type}</div>
-      <div class="mbti-name">${m.name}</div>
-      <div class="mbti-desc">${m.desc}</div>
-      <div style="margin-top:10px;font-size:10px;color:#7F77DD;">총 ${total}회 분석 · ${growth}</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="mbti-card">
+        <div class="mbti-type">${m.type}</div>
+        <div class="mbti-name">${m.name}</div>
+        <div class="mbti-desc">${m.desc}</div>
+        <div style="margin-top:8px;font-size:10px;color:#7F77DD;">총 ${total}회 분석 · ${growth}</div>
+      </div>
+      <div class="tip-box">💡 ${m.tip}</div>
+      <div class="card"><div class="card-label" style="margin-bottom:10px;">감정 분포</div>${stats}</div>
+      <div class="card"><div class="card-label" style="margin-bottom:6px;">📚 투자 심리 지식</div><div style="font-size:13px;color:#ddd;line-height:1.7;">${m.knowledge}</div></div>
+      <button class="kakao-share-btn" onclick="shareKakao()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><path d="M12 3C6.48 3 2 6.48 2 10.8c0 2.7 1.68 5.07 4.2 6.48L5.1 21l4.98-2.46c.6.12 1.26.18 1.92.18 5.52 0 10-3.48 10-7.8C22 6.48 17.52 3 12 3z"/></svg>
+        카카오톡으로 공유하기
+      </button>
+      <button class="btn-outline" onclick="if(confirm('기록을 초기화할까요?')){localStorage.removeItem('bh');localStorage.removeItem('be');analysisHistory=[];emotions=[];renderMbti();}">🗑️ 기록 초기화</button>
     </div>
-    <div class="tip-box">💡 ${m.tip}</div>
-    <div class="card">
-      <div class="card-label" style="margin-bottom:10px;">감정 분포</div>
-      ${stats}
-    </div>
-    <div class="card">
-      <div class="card-label" style="margin-bottom:6px;">📚 투자 심리 지식</div>
-      <div style="font-size:13px;color:#ddd;line-height:1.7;">${m.knowledge}</div>
-    </div>
-    <button class="kakao-share-btn" onclick="shareKakao()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="#000">
-        <path d="M12 3C6.48 3 2 6.48 2 10.8c0 2.7 1.68 5.07 4.2 6.48L5.1 21l4.98-2.46c.6.12 1.26.18 1.92.18 5.52 0 10-3.48 10-7.8C22 6.48 17.52 3 12 3z"/>
-      </svg>
-      카카오톡으로 공유하기
-    </button> 
-    <button class="btn-outline" onclick="if(confirm('기록을 초기화할까요?')){localStorage.removeItem('bh');localStorage.removeItem('be');analysisHistory=[];emotions=[];renderMbti();}">
-      🗑️ 기록 초기화
-    </button>
   `;
 }
 
 function shareKakao() {
-  const top = Object.keys(
-    emotions.reduce((c,e) => ({...c,[e]:(c[e]||0)+1}),{})
-  ).sort((a,b) => 
-    emotions.filter(x=>x===b).length - emotions.filter(x=>x===a).length
-  )[0];
+  const counts = emotions.reduce((c,e) => ({...c,[e]:(c[e]||0)+1}),{});
+  const top = Object.keys(counts).sort((a,b) => counts[b]-counts[a])[0];
   const m = MBTI_MAP[top];
-  const total = emotions.length;
-  const url = 'https://skyshhackathon-production.up.railway.app';
-  const text = `나의 투자자 유형은 "${m.type}"!\n${m.name}\n\n${m.desc}\n\n총 ${total}회 분석 결과예요.\n투자 블랙박스에서 확인해보세요 👉 ${url}`;
-
+  const text = `나의 투자자 유형은 "${m.type}"!\n${m.name}\n\n${m.desc}\n\n총 ${emotions.length}회 분석 결과예요.\n투자 블랙박스에서 내 투자 심리 확인해보세요 👉 https://skyshhackathon-production.up.railway.app`;
   if (navigator.share) {
-    navigator.share({
-      title: '투자 블랙박스 - 나의 투자자 유형',
-      text: text,
-      url: url
-    }).catch(() => {
-      copyToClipboard(text);
-    });
-  } else {
-    copyToClipboard(text);
-  }
+    navigator.share({ title: '투자 블랙박스', text, url: 'https://skyshhackathon-production.up.railway.app' }).catch(() => copyToClipboard(text));
+  } else copyToClipboard(text);
 }
 
 function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    alert('📋 복사됐어요!\n카카오톡 채팅창에 붙여넣기(Ctrl+V) 해보세요.');
-  }).catch(() => {
+  navigator.clipboard.writeText(text).then(() => alert('📋 복사됐어요!\n카카오톡에 붙여넣기 해보세요.')).catch(() => {
     const el = document.createElement('textarea');
     el.value = text;
     document.body.appendChild(el);
     el.select();
     document.execCommand('copy');
     document.body.removeChild(el);
-    alert('📋 복사됐어요!\n카카오톡 채팅창에 붙여넣기 해보세요.');
+    alert('📋 복사됐어요!');
   });
 }
 
@@ -1006,14 +924,13 @@ function renderHistory() {
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div>
           <div style="font-size:13px;font-weight:500;">${eEmoji[h.emotion]||'🔍'} ${h.coin}</div>
-          <div style="font-size:11px;color:#666;margin-top:2px;">${h.time} · <span style="color:${eColor[h.emotion]||'#888'}">${h.emotion}</span></div>
+          <div style="font-size:11px;color:#666;margin-top:2px;">${h.time} · <span style="color:${eColor[h.emotion]||'#888'}">${MBTI_MAP[h.emotion]?.type || h.emotion}</span></div>
         </div>
         <div style="font-size:11px;color:#555;">▼</div>
       </div>
       <div style="font-size:12px;color:#aaa;margin-top:6px;">${(h.input||'').slice(0,40)}...</div>
-      <div class="history-body" id="hb-${i}" style="font-size:13px;color:#ddd;line-height:1.7;">${h.input||''}</div>
-    </div>
-  `).join('');
+      <div class="history-body" id="hb-${i}">${h.input||''}</div>
+    </div>`).join('');
 }
 
 window.onload = () => { renderCoinList(); };
