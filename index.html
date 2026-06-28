@@ -348,6 +348,19 @@ function showTopTab(tab, el) {
   if (el) el.classList.add('active');
   if (tab === 'mytype') renderMbti();
   if (tab === 'history') renderHistory();
+
+  // 헤더 변경
+  const headers = {
+    'blackbox': { title: '📦 투자 블랙박스', sub: '매수 전, 내 감정과 시장을 함께 확인하세요' },
+    'timemachine': { title: '⏳ 타임머신', sub: '과거 데이터로 현재를 분석해요' },
+    'mytype': { title: '🧬 나의 투자자 유형', sub: '내 투자 심리 패턴을 확인해요' },
+    'history': { title: '📋 분석 기록', sub: '지금까지 분석한 내역이에요' }
+  };
+  const h = headers[tab];
+  if (h) {
+    document.querySelector('.header-title').textContent = h.title;
+    document.querySelector('.header-sub').textContent = h.sub;
+  }
 }
 
 // 하단 탭 전환
