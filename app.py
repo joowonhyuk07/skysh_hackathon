@@ -307,6 +307,18 @@ def get_stats():
 def serve_data(filename):
     return app.send_static_file(filename)
 
+@app.route('/api/timemachine/<year>')
+def get_timemachine_data(year):
+    import json
+    try:
+        with open(f'data_{year}.js', 'r', encoding='utf-8') as f:
+            content = f.read()
+        # "const market_data = " 제거하고 JSON만 추출
+        json_str = content.replace('const market_data = ', '').replace(';\nexport default market_data;', '').strip()
+        data = json.loads(json_str)
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/')
 def index():

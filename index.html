@@ -365,14 +365,6 @@ function showTopTab(tab, el) {
   }
 }
 
-function loadTimeMachine() {
-  const frame = document.getElementById('timemachine-frame');
-  if (frame.srcdoc !== '') return; // 이미 로드됐으면 스킵
-  
-  const timemachineHTML = `타임머신 HTML 전체 코드`;
-  frame.srcdoc = timemachineHTML;
-}
-
 // 하단 탭 전환
 function showBottomTab(tab, el) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -1181,8 +1173,9 @@ function loadTimeMachine() {
         const scenarioKey = document.getElementById("setup-scenario").value;
         const year = scenarioKey.split('_')[0];
         try {
-            const module = await import(\`\${BACKEND_URL}/data/data_\${year}.js\`);
-            market_data = module.default;
+            const res = await fetch(\`\${BACKEND_URL}/api/timemachine/\${year}\`);
+            if (!res.ok) throw new Error('데이터 로드 실패');
+            market_data = await res.json();
         } catch(error) {
             alert("데이터 로드 실패: " + error.message);
             return;
