@@ -44,6 +44,30 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .news-article-link { font-size: 10px; color: #378ADD; text-decoration: none; }
 .news-analysis { padding: 12px 16px; border-top: 1px solid #1e1e2e; font-size: 13px; color: #ddd; line-height: 1.7; }
 .news-loading { padding: 20px; text-align: center; color: #555; font-size: 13px; }
+
+.kakao-share-btn {
+  width: 100%;
+  background: #FEE500;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  color: #000;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.kakao-share-btn:hover { background: #F5DC00; }
+
+
+
+
+
+
 /* 코인 목록 */
 .section-title { font-size: 13px; font-weight: 500; color: #666; margin-bottom: 4px; }
 .coin-list { display: flex; flex-direction: column; gap: 8px; }
@@ -902,9 +926,12 @@ function renderMbti() {
       <div class="card-label" style="margin-bottom:6px;">📚 투자 심리 지식</div>
       <div style="font-size:13px;color:#ddd;line-height:1.7;">${m.knowledge}</div>
     </div>
-    <button class="btn-primary" onclick="shareKakao()" style="background:#FEE500;color:#000;margin-bottom:8px;">
-      💬 카카오톡으로 공유하기
-    </button>
+    <button class="kakao-share-btn" onclick="shareKakao()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#000">
+        <path d="M12 3C6.48 3 2 6.48 2 10.8c0 2.7 1.68 5.07 4.2 6.48L5.1 21l4.98-2.46c.6.12 1.26.18 1.92.18 5.52 0 10-3.48 10-7.8C22 6.48 17.52 3 12 3z"/>
+      </svg>
+      카카오톡으로 공유하기
+    </button> 
     <button class="btn-outline" onclick="if(confirm('기록을 초기화할까요?')){localStorage.removeItem('bh');localStorage.removeItem('be');analysisHistory=[];emotions=[];renderMbti();}">
       🗑️ 기록 초기화
     </button>
@@ -914,22 +941,39 @@ function renderMbti() {
 function shareKakao() {
   const top = Object.keys(
     emotions.reduce((c,e) => ({...c,[e]:(c[e]||0)+1}),{})
-  ).sort((a,b) => emotions.filter(x=>x===b).length - emotions.filter(x=>x===a).length)[0];
+  ).sort((a,b) => 
+    emotions.filter(x=>x===b).length - emotions.filter(x=>x===a).length
+  )[0];
   const m = MBTI_MAP[top];
   const total = emotions.length;
-  const text = `나의 투자자 유형은 "${m.type}" (${m.name})!\n총 ${total}회 분석 결과예요.\n\n${m.desc}\n\n투자 블랙박스에서 내 투자 심리 확인해보세요 👉 https://skyshhackathon-production.up.railway.app`;
-  
+  const url = 'https://skyshhackathon-production.up.railway.app';
+  const text = `나의 투자자 유형은 "${m.type}"!\n${m.name}\n\n${m.desc}\n\n총 ${total}회 분석 결과예요.\n투자 블랙박스에서 확인해보세요 👉 ${url}`;
+
   if (navigator.share) {
     navigator.share({
       title: '투자 블랙박스 - 나의 투자자 유형',
       text: text,
-      url: 'https://skyshhackathon-production.up.railway.app'
+      url: url
+    }).catch(() => {
+      copyToClipboard(text);
     });
   } else {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('클립보드에 복사됐어요! 카카오톡에 붙여넣기 해보세요.');
-    });
+    copyToClipboard(text);
   }
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    alert('📋 복사됐어요!\n카카오톡 채팅창에 붙여넣기(Ctrl+V) 해보세요.');
+  }).catch(() => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    alert('📋 복사됐어요!\n카카오톡 채팅창에 붙여넣기 해보세요.');
+  });
 }
 
 function renderHistory() {
