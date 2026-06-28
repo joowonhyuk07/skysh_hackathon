@@ -369,11 +369,10 @@ function showBottomTab(tab, el) {
   document.querySelectorAll('.bottom-tab-item').forEach(n => n.classList.remove('active'));
   document.getElementById('btab-' + tab).classList.add('active');
   if (el) el.classList.add('active');
-  if (tab === 'chat' && chatHistory.length === 0) {
+  if (tab === 'chat' && document.getElementById('chat-messages').children.length === 0) {
     initChat();
   }
 }
-
 // 메인 코인 목록
 async function renderCoinList() {
   const list = document.getElementById('coin-list');
