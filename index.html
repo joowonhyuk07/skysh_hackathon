@@ -708,6 +708,9 @@ async function sendChat() {
   if (!input) return;
   document.getElementById('chat-input').value = '';
   document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('selected'));
+  if (chatHistory.length > 0) {
+    document.querySelector('.quick-btns').style.display = 'none';
+  }
   addUserBubble(input);
   document.getElementById('chat-send').disabled = true;
 
@@ -793,13 +796,30 @@ async function callGemini(prompt, useHistory) {
   }
 }
 
+function typeWriter(el, text, speed = 15) {
+  const cleaned = text.replace(/\[EMOTION:[^\]]+\]/g, '').trim();
+  let i = 0;
+  el.innerHTML = '';
+  const interval = setInterval(() => {
+    if (i < cleaned.length) {
+      el.innerHTML += cleaned[i] === '\n' ? '<br>' : cleaned[i];
+      i++;
+      const msgs = document.getElementById('chat-messages');
+      msgs.scrollTop = msgs.scrollHeight;
+    } else {
+      clearInterval(interval);
+    }
+  }, speed);
+}
+
 function addAIBubble(text) {
   const el = document.createElement('div');
-  el.innerHTML = `<div class="chat-ai-label">블랙박스 AI</div><div>${text.replace(/\n/g,'<br>')}</div>`;
+  el.innerHTML = `<div class="chat-ai-label">🤖 블랙</div><div class="chat-ai-text"></div>`;
   el.className = 'chat-bubble chat-ai';
   const msgs = document.getElementById('chat-messages');
   msgs.appendChild(el);
   msgs.scrollTop = msgs.scrollHeight;
+  typeWriter(el.querySelector('.chat-ai-text'), text);
 }
 
 function addUserBubble(text) {
@@ -813,7 +833,7 @@ function addUserBubble(text) {
 
 function addTyping() {
   const el = document.createElement('div');
-  el.innerHTML = `<div class="chat-ai-label">블랙박스 AI</div><div class="typing"><span></span><span></span><span></span></div>`;
+  el.innerHTML = `<div class="chat-ai-label">🤖 블랙</div><div class="typing"><span></span><span></span><span></span></div>`;
   el.className = 'chat-bubble chat-ai';
   const msgs = document.getElementById('chat-messages');
   msgs.appendChild(el);
