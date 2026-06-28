@@ -129,17 +129,35 @@ def analyze_news():
 
     # Google News RSS로 최신 뉴스 가져오기
     try:
-        rss_url = f'https://news.google.com/rss/search?q={keyword}+cryptocurrency&hl=ko&gl=KR&ceid=KR:ko'
-        feed = feedparser.parse(rss_url)
+        # 여러 RSS 소스 시도
+        rss_urls = [
+            f'https://news.google.com/rss/search?q={keyword}+crypto&hl=ko&gl=KR&ceid=KR:ko',
+            f'https://feeds.feedburner.com/coindesk/rss/articlefeeds',
+            f'https://cointelegraph.com/rss'
+        ]
         articles = []
-        for entry in feed.entries[:5]:
-            articles.append({
-                'title': entry.get('title', ''),
-                'link': entry.get('link', ''),
-                'published': entry.get('published', ''),
-                'summary': entry.get('summary', '')[:200] if entry.get('summary') else ''
-            })
+        for rss_url in rss_urls:
+            try:
+                headers = {'User-Agent': 'Mozilla/5.0'}
+                response_rss = requests.get(rss_url, headers=headers, timeout=5)
+                feed = feedparser.parse(response_rss.content)
+                for entry in feed.entries[:5]:
+                    title = entry.get('title', '')
+                    if keyword.split()[0].lower() in title.lower() or True:
+                        articles.append({
+                            'title': title,
+                            'link': entry.get('link', ''),
+                            'published': entry.get('published', ''),
+                            'summary': entry.get('summary', '')[:200] if entry.get('summary') else ''
+                        })
+                if articles:
+                    break
+            except:
+                continue
+        articles = articles[:5]
+        print(f"articles 개수: {len(articles)}")
     except Exception as e:
+        print(f"뉴스 에러: {e}")
         articles = []
 
     # 뉴스 없으면 Gemini 자체 지식 사용
