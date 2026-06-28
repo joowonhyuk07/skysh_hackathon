@@ -319,6 +319,73 @@ def get_timemachine_data(year):
         return jsonify(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+@app.route('/api/timemachine/analyze', methods=['POST'])
+def analyze_timemachine():
+    data = request.json
+    trade_logs = data.get('trade_logs', [])
+    roi = data.get('roi', 0)
+    start_seed = data.get('start_seed', 0)
+    final_asset = data.get('final_asset', 0)
+    scenario = data.get('scenario', '')
+    executed_points = data.get('executed_points', [])
+
+    if not trade_logs:
+        return jsonify({'result': '체결된 거래가 없어서 분석할 수 없어요.\n다음엔 매수/매도를 시도해보세요!'})
+
+    trade_summary = '\n'.join(trade_logs)
+    points_summary = '\n'.join([
+        f"- {p['type']} {p['coin']} {p['price']:,}원 ({p['index']}번째 시점)"
+        for p in executed_points
+    ])
+
+    prompt = f"""
+너는 10년 경력의 투자 행동 분석가야.
+아래 모의투자 결과를 보고 매매 행동을 분석해줘.
+
+절대 금지:
+- 파도타이머, 유리멘탈러, 근자감왕, 돌부처형 같은 감정 유형 이름 사용 금지
+- "이렇게 했어야 한다" 단정 금지
+- 매수/매도 권유 금지
+- 수익 보장 표현 금지
+
+[시나리오]
+{scenario}
+
+[결과]
+- 시작 자산: {start_seed:,}원
+- 최종 자산: {final_asset:,}원
+- 수익률: {roi}%
+
+[체결 로그]
+{trade_summary}
+
+[매매 타점]
+{points_summary}
+
+형식:
+
+## 🎯 매매 행동 분석
+(실제 체결 로그 기반으로 구체적으로. 언제 어떤 행동을 했는지 사실 위주로 2~3문장)
+
+## 🔍 이 매매를 보는 두 가지 시각
+시각 1️⃣: (긍정적 해석 - 이 매매의 합리적인 이유)
+시각 2️⃣: (다른 해석 - 놓쳤을 수 있는 부분)
+
+## 💡 알아두면 좋은 것
+(이 매매 상황과 관련된 투자 지식 1가지. 초보자 언어로)
+
+## 🤔 스스로 생각해볼 것
+(판단을 유도하는 열린 질문 1개로 마무리)
+
+마지막에 반드시: "※ 이 분석은 참고용이며 투자 권유가 아닙니다."
+"""
+
+    try:
+        response = model.generate_content(prompt)
+        return jsonify({'result': response.text})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/')
 def index():
