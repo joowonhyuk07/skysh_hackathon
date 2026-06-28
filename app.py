@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import google.generativeai as genai
 import requests
+import feedparser
+from datetime import datetime, timezone
 import os
 from dotenv import load_dotenv
 
@@ -111,20 +113,84 @@ def analyze_news():
     coin_name = data.get('coin', '')
     market_ctx = data.get('context', {})
 
-    prompt = f"""
-{coin_name}에 대해 오늘 기준으로 어떤 이슈나 트렌드가 있는지 설명해줘.
-현재 상황: 가격 {market_ctx.get('price', 0):,}원, 오늘 {market_ctx.get('rate', 0)}% 변동, RSI {market_ctx.get('rsi', 0)}
+    # 코인별 검색 키워드
+    coin_keywords = {
+        '비트코인 (BTC)': 'bitcoin BTC',
+        '이더리움 (ETH)': 'ethereum ETH',
+        '리플 (XRP)': 'ripple XRP',
+        '솔라나 (SOL)': 'solana SOL',
+        '도지코인 (DOGE)': 'dogecoin DOGE',
+        '에이다 (ADA)': 'cardano ADA',
+        '아발란체 (AVAX)': 'avalanche AVAX',
+        '체인링크 (LINK)': 'chainlink LINK'
+    }
 
-주의:
-- 투자 권유 절대 금지
-- 초보자도 이해할 수 있게 쉽게 설명
-- 3~4문장으로 짧게
+    keyword = coin_keywords.get(coin_name, coin_name)
 
-마지막에 반드시: "※ 이 내용은 참고용이며 투자 권유가 아닙니다."
+    # Google News RSS로 최신 뉴스 가져오기
+    try:
+        rss_url = f'https://news.google.com/rss/search?q={keyword}+cryptocurrency&hl=ko&gl=KR&ceid=KR:ko'
+        feed = feedparser.parse(rss_url)
+        articles = []
+        for entry in feed.entries[:5]:
+            articles.append({
+                'title': entry.title,
+                'link': entry.link,
+                'published': entry.get('published', ''),
+                'summary': entry.get('summary', '')[:200]
+            })
+    except Exception as e:
+        articles = []
+
+    # 뉴스 없으면 Gemini 자체 지식 사용
+    if articles:
+        news_text = '\n'.join([f"- {a['title']}" for a in articles])
+        prompt = f"""
+다음은 {coin_name} 관련 최신 뉴스 기사 제목들이야:
+{news_text}
+
+현재 시장 상황:
+- 현재가: {market_ctx.get('price', 0):,}원
+- 오늘 등락률: {market_ctx.get('rate', 0)}%
+- RSI: {market_ctx.get('rsi', 0)}
+- 시장 온도: {market_ctx.get('fg', 50)}/100
+
+위 뉴스들을 초보 투자자가 이해할 수 있게 분석해줘.
+
+형식:
+## 📰 주요 뉴스 요약
+(각 뉴스를 한 줄씩 쉽게 설명)
+
+## 🔍 시장에 미치는 영향
+(이 뉴스들이 가격에 어떤 영향을 줄 수 있는지 2~3문장, 가능성으로만 설명)
+
+## 💡 초보자가 알아두면 좋은 것
+(이 상황에서 초보자가 알아야 할 개념 1가지)
+
+마지막에 반드시: "※ 이 분석은 참고용이며 투자 권유가 아닙니다."
+
+절대 금지: 매수/매도 권유, 수익 보장 표현
 """
+    else:
+        prompt = f"""
+{coin_name}의 최근 시장 동향과 주요 이슈를 설명해줘.
+현재가: {market_ctx.get('price', 0):,}원, 등락률: {market_ctx.get('rate', 0)}%
+
+형식:
+## 📰 최근 동향
+## 🔍 주요 이슈
+## 💡 초보자 포인트
+
+마지막에: "※ 이 분석은 참고용이며 투자 권유가 아닙니다."
+절대 금지: 매수/매도 권유
+"""
+
     try:
         response = model.generate_content(prompt)
-        return jsonify({'result': response.text})
+        return jsonify({
+            'result': response.text,
+            'articles': articles
+        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

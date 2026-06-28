@@ -33,7 +33,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   height: 1.2em;
   line-height: 1.2em;
 }
-
+.news-section { background: #13131f; border: 1px solid #1e1e2e; border-radius: 14px; overflow: hidden; }
+.news-header { padding: 12px 16px; border-bottom: 1px solid #1e1e2e; display: flex; justify-content: space-between; align-items: center; }
+.news-header-title { font-size: 13px; font-weight: 500; color: #aaa; }
+.news-close-btn { background: #1e1e2e; border: none; border-radius: 8px; padding: 5px 10px; font-size: 11px; color: #aaa; cursor: pointer; }
+.news-articles { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+.news-article-item { background: #0a0a0f; border: 1px solid #1e1e2e; border-radius: 10px; padding: 10px 12px; }
+.news-article-title { font-size: 12px; color: #ddd; line-height: 1.5; margin-bottom: 4px; }
+.news-article-time { font-size: 10px; color: #555; }
+.news-article-link { font-size: 10px; color: #378ADD; text-decoration: none; }
+.news-analysis { padding: 12px 16px; border-top: 1px solid #1e1e2e; font-size: 13px; color: #ddd; line-height: 1.7; }
+.news-loading { padding: 20px; text-align: center; color: #555; font-size: 13px; }
 /* 코인 목록 */
 .section-title { font-size: 13px; font-weight: 500; color: #666; margin-bottom: 4px; }
 .coin-list { display: flex; flex-direction: column; gap: 8px; }
@@ -176,24 +186,35 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
         <div class="index-section-title">📊 주요 지수 <span style="font-size:11px;color:#555;">클릭하면 설명 봐요</span></div>
         <div class="index-grid" id="index-grid"></div>
       </div>
-      <div class="chat-section">
-        <div class="chat-header">
-          <div class="chat-header-title">🤖 AI 감정 분석</div>
-          <button class="news-btn" onclick="analyzeNews()">📰 뉴스 분석</button>
-        </div>
-        <div class="chat-messages" id="chat-messages"></div>
-        <div class="quick-btns">
-          <button class="quick-btn" onclick="selectQuick(this,'뉴스에서 오른다고 봤어요')">뉴스 봤어요</button>
-          <button class="quick-btn" onclick="selectQuick(this,'친구가 샀다고 해서요')">친구 따라서요</button>
-          <button class="quick-btn" onclick="selectQuick(this,'그냥 오를 것 같아요')">그냥 살까요</button>
-          <button class="quick-btn" onclick="selectQuick(this,'떨어져서 지금이 기회 같아요')">저점 같아요</button>
-          <button class="quick-btn" onclick="selectQuick(this,'유튜브에서 추천해서요')">유튜브 봤어요</button>
-        </div>
-        <div class="chat-input-area">
-          <textarea class="chat-input" id="chat-input" rows="2" placeholder="매수 이유를 말해줘요..." onkeydown="handleKey(event)"></textarea>
-          <button class="chat-send" id="chat-send" onclick="sendChat()">전송</button>
-        </div>
-      </div>
+      <!-- 뉴스 섹션 -->
+<div class="news-section" id="news-section" style="display:none;">
+  <div class="news-header">
+    <div class="news-header-title">📰 최신 뉴스 분석</div>
+    <button class="news-close-btn" onclick="closeNews()">✕ 닫기</button>
+  </div>
+  <div class="news-articles" id="news-articles"></div>
+  <div class="news-analysis" id="news-analysis"></div>
+</div>
+
+<!-- AI 채팅 섹션 -->
+<div class="chat-section">
+  <div class="chat-header">
+    <div class="chat-header-title">🤖 AI 감정 분석</div>
+    <button class="news-btn" onclick="toggleNews()">📰 뉴스 분석</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="quick-btns">
+    <button class="quick-btn" onclick="selectQuick(this,'뉴스에서 오른다고 봤어요')">뉴스 봤어요</button>
+    <button class="quick-btn" onclick="selectQuick(this,'친구가 샀다고 해서요')">친구 따라서요</button>
+    <button class="quick-btn" onclick="selectQuick(this,'그냥 오를 것 같아요')">그냥 살까요</button>
+    <button class="quick-btn" onclick="selectQuick(this,'떨어져서 지금이 기회 같아요')">저점 같아요</button>
+    <button class="quick-btn" onclick="selectQuick(this,'유튜브에서 추천해서요')">유튜브 봤어요</button>
+  </div>
+  <div class="chat-input-area">
+    <textarea class="chat-input" id="chat-input" rows="2" placeholder="매수 이유를 말해줘요..." onkeydown="handleKey(event)"></textarea>
+    <button class="chat-send" id="chat-send" onclick="sendChat()">전송</button>
+  </div>
+</div>
     </div>
 
     <!-- 타임머신 탭 -->
@@ -595,9 +616,27 @@ function closeWebSocket() {
 }
 
 // 뉴스 분석
+function toggleNews() {
+  const newsSection = document.getElementById('news-section');
+  if (newsSection.style.display === 'none') {
+    newsSection.style.display = 'block';
+    analyzeNews();
+  } else {
+    newsSection.style.display = 'none';
+  }
+}
+
+function closeNews() {
+  document.getElementById('news-section').style.display = 'none';
+}
+
 async function analyzeNews() {
-  addAIBubble('📰 ' + currentCoinName + ' 관련 최신 뉴스를 분석하고 있어요...');
-  const typingEl = addTyping();
+  const articlesEl = document.getElementById('news-articles');
+  const analysisEl = document.getElementById('news-analysis');
+
+  articlesEl.innerHTML = '<div class="news-loading">📰 최신 뉴스 불러오는 중...</div>';
+  analysisEl.innerHTML = '';
+
   try {
     const res = await fetch(`${BACKEND_URL}/api/news`, {
       method: 'POST',
@@ -605,11 +644,27 @@ async function analyzeNews() {
       body: JSON.stringify({ coin: currentCoinName, context: marketCtx })
     });
     const data = await res.json();
-    typingEl.remove();
-    addAIBubble(data.result);
+
+    // 기사 목록 표시
+    if (data.articles && data.articles.length > 0) {
+      articlesEl.innerHTML = data.articles.map(a => `
+        <div class="news-article-item">
+          <div class="news-article-title">${a.title}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+            <div class="news-article-time">${a.published ? new Date(a.published).toLocaleDateString('ko-KR') : ''}</div>
+            <a class="news-article-link" href="${a.link}" target="_blank">기사 보기 →</a>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      articlesEl.innerHTML = '<div class="news-loading">최신 기사를 찾지 못했어요.</div>';
+    }
+
+    // AI 분석 표시
+    analysisEl.innerHTML = data.result.replace(/\n/g, '<br>').replace(/##/g, '<br><strong>').replace(/\*\*/g, '');
+
   } catch(e) {
-    typingEl.remove();
-    addAIBubble('뉴스 분석 중 오류가 났어요.');
+    articlesEl.innerHTML = '<div class="news-loading">뉴스를 불러오지 못했어요.</div>';
   }
 }
 

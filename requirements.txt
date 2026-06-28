@@ -1,7 +1,8 @@
 flask
 flask-cors
-requests
-google-generativeai
 flask-sqlalchemy
+google-generativeai
 python-dotenv
 gunicorn
+requests
+feedparser
