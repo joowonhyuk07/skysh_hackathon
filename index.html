@@ -1253,14 +1253,23 @@ function loadTimeMachine() {
         }
         mainChart.update('none');
 
-        const rsiKey = Object.keys(row).find(k => k.includes('rsi') || k.includes('RSI'));
-        const rsi = rsiKey ? row[rsiKey] : null;
         const rsiBadge = document.getElementById('rsi-badge');
-        rsiBadge.innerText = (rsi && Number(rsi) !== 0) ? \`RSI: \${parseFloat(rsi).toFixed(1)}\` : 'RSI: --';
-        rsiBadge.style.background = rsi >= 70 ? 'rgba(231,76,60,0.2)' : rsi <= 30 ? 'rgba(52,152,219,0.2)' : '#1e1e2e';
-        rsiBadge.style.color = rsi >= 70 ? '#e74c3c' : rsi <= 30 ? '#3498db' : '#aaa';
-        rsiBadge.style.background = rsi >= 70 ? 'rgba(231,76,60,0.2)' : rsi <= 30 ? 'rgba(52,152,219,0.2)' : '#1e1e2e';
-        rsiBadge.style.color = rsi >= 70 ? '#e74c3c' : rsi <= 30 ? '#3498db' : '#aaa';
+        const closePrices = mainChart.data.datasets[0].data.slice(-15);
+        if (closePrices.length >= 14) {
+            let gains = 0, losses = 0;
+            for (let i = 1; i < closePrices.length; i++) {
+                const diff = closePrices[i] - closePrices[i-1];
+                if (diff > 0) gains += diff; else losses -= diff;
+            }
+            const p = closePrices.length - 1;
+            const ag = gains/p, al = losses/p;
+            const rsiVal = al === 0 ? 100 : Math.round(100 - 100/(1 + ag/al));
+            rsiBadge.innerText = \`RSI: \${rsiVal}\`;
+            rsiBadge.style.background = rsiVal >= 70 ? 'rgba(231,76,60,0.2)' : rsiVal <= 30 ? 'rgba(52,152,219,0.2)' : '#1e1e2e';
+            rsiBadge.style.color = rsiVal >= 70 ? '#e74c3c' : rsiVal <= 30 ? '#3498db' : '#aaa';
+        } else {
+            rsiBadge.innerText = 'RSI: 계산중...';
+        }
 
         const gap = price > 1000000 ? 50000 : price > 100000 ? 1000 : 10;
         document.getElementById('current-price').innerText = price.toLocaleString() + " 원";
