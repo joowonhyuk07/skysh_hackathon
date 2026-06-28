@@ -1073,10 +1073,8 @@ function loadTimeMachine() {
                 <span style="color:#aaa;font-size:14px;">복기 차트 (매수/매도 타점)</span>
                 <select id="result-ticker-switch" style="background:#1e1e2e;color:#fff;border:1px solid #378ADD;padding:4px;border-radius:6px;font-size:13px;"></select>
             </div>
-            <div class="result-chart-wrap">
-              <div class="result-chart-inner">
+            <div class="chart-container" style="height:280px;">
                 <canvas id="resultChart"></canvas>
-              </div>
             </div>
             <div class="info-box" style="margin-top:12px;">
                 <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #1e1e2e;">
@@ -1445,7 +1443,7 @@ function loadTimeMachine() {
                 ]
             },
             options: {
-                responsive: false,
+                responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { labels: { color: '#aaa', font: { size: 11 } } } },
                 scales: {
