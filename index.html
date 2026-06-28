@@ -19,6 +19,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .page { display: none; flex-direction: column; gap: 12px; }
 .page.active { display: flex; }
 .detail-price { transition: color 0.5s ease; }
+.price-roller {
+  overflow: hidden;
+  height: 1.2em;
+  display: inline-block;
+}
+.price-roller-inner {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.price-roller-inner span {
+  height: 1.2em;
+  line-height: 1.2em;
+}
 
 /* 코인 목록 */
 .section-title { font-size: 13px; font-weight: 500; color: #666; margin-bottom: 4px; }
@@ -528,19 +542,47 @@ function startWebSocket(market) {
       const text = new TextDecoder().decode(buf);
       const data = JSON.parse(text);
       if (data.type === 'ticker') {
-        const price = data.trade_price;
-        const rate = (data.signed_change_rate * 100).toFixed(2);
-        const priceEl = document.getElementById('detail-price');
-        const oldPrice = parseInt(priceEl.dataset.raw || 0);
-        priceEl.dataset.raw = price;
-        priceEl.style.color = price > oldPrice ? '#2ecc71' : price < oldPrice ? '#e74c3c' : '#fff';
-        priceEl.textContent = price.toLocaleString() + '원';
-        setTimeout(() => { priceEl.style.color = '#fff'; }, 1000);
-        chEl.textContent = (rate > 0 ? '▲ +' : '▼ ') + rate + '%';
-        chEl.className = 'detail-change ' + (rate > 0 ? 'up' : 'down');
-        marketCtx.price = price;
-        marketCtx.rate = parseFloat(rate);
-      }
+      const price = data.trade_price;
+      const rate = (data.signed_change_rate * 100).toFixed(2);
+  
+      // 롤링 애니메이션
+      const priceEl = document.getElementById('detail-price');
+      const oldPrice = parseInt(priceEl.dataset.raw || price);
+      priceEl.dataset.raw = price;
+  
+      const formatted = price.toLocaleString() + '원';
+      const oldFormatted = oldPrice.toLocaleString() + '원';
+  
+      priceEl.innerHTML = `
+        <div class="price-roller">
+          <div class="price-roller-inner" id="price-roller-inner">
+            <span>${formatted}</span>
+            <span>${oldFormatted}</span>
+          </div>
+        </div>
+      `;
+  
+      // 아래서 위로 올라오는 애니메이션
+      const inner = document.getElementById('price-roller-inner');
+      inner.style.transform = 'translateY(-1.2em)';
+      setTimeout(() => {
+        inner.style.transition = 'none';
+        inner.style.transform = 'translateY(0)';
+        inner.innerHTML = `<span>${formatted}</span><span></span>`;
+      }, 400);
+  
+      // 색상 변화
+      priceEl.style.color = price > oldPrice ? '#2ecc71' : price < oldPrice ? '#e74c3c' : '#fff';
+      setTimeout(() => { priceEl.style.color = '#fff'; }, 1000);
+  
+      // 등락률 업데이트
+      const chEl = document.getElementById('detail-change');
+      chEl.textContent = (rate > 0 ? '▲ +' : '▼ ') + rate + '%';
+      chEl.className = 'detail-change ' + (rate > 0 ? 'up' : 'down');
+  
+      marketCtx.price = price;
+      marketCtx.rate = parseFloat(rate);
+    }
     };
     ws.onerror = () => {};
     wsConnections['main'] = ws;
