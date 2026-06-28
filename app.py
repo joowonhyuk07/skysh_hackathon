@@ -268,6 +268,32 @@ def get_history():
         'time': r.created_at.strftime('%m/%d %H:%M')
     } for r in records])
 
+
+@app.route('/api/coin/<market>')
+def get_coin_data(market):
+    try:
+        import concurrent.futures
+        def get_ticker():
+            return requests.get(f'https://api.upbit.com/v1/ticker?markets={market}', headers={'accept':'application/json'}).json()
+        def get_candles():
+            return requests.get(f'https://api.upbit.com/v1/candles/days?market={market}&count=14', headers={'accept':'application/json'}).json()
+        def get_orderbook():
+            return requests.get(f'https://api.upbit.com/v1/orderbook?markets={market}', headers={'accept':'application/json'}).json()
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            f1 = executor.submit(get_ticker)
+            f2 = executor.submit(get_candles)
+            f3 = executor.submit(get_orderbook)
+            ticker = f1.result()
+            candles = f2.result()
+            orderbook = f3.result()
+
+        return jsonify({ 'ticker': ticker, 'candles': candles, 'orderbook': orderbook })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
 # 감정 통계
 @app.route('/api/stats')
 def get_stats():

@@ -184,16 +184,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <!-- 블랙박스 메인 (코인 목록) -->
     <div id="page-blackbox" class="page active">
       <div class="coin-list-wrap">
-        <div class="market-summary" id="market-summary">
-          <div class="market-summary-title">오늘 코인 시장 전체 분위기</div>
-          <div class="market-summary-row">
-            <div>
-              <div class="market-summary-label" id="summary-label">불러오는 중...</div>
-              <div class="market-summary-sub" id="summary-sub"></div>
-            </div>
-            <div id="summary-score" style="font-size:24px;font-weight:700;color:#fff;"></div>
-          </div>
-        </div>
         <div id="coin-list"></div>
       </div>
     </div>
@@ -233,8 +223,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
           </div>
           <div class="chart-wrap"><canvas id="price-chart"></canvas></div>
         </div>
-        <div class="index-section-title">📊 주요 지수 요약 <span style="font-size:10px;color:#555;">자세히 보려면 지수 탭으로</span></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;" id="mini-index"></div>
       </div>
 
       <!-- 지수 탭 -->
@@ -448,6 +436,7 @@ async function openCoin(market, name) {
   await loadDetailData(market);
   loadChart(market, 'days');
   startWebSocket(market);
+  setTimeout(() => loadNews(), 500);
 }
 
 function goBack() {
@@ -461,11 +450,10 @@ function goBack() {
 // 시장 데이터
 async function loadDetailData(market) {
   try {
-    const [ticker, candles, orderbook] = await Promise.all([
-      fetch(`${BACKEND_URL}/api/upbit/ticker?markets=${market}`).then(r => r.json()),
-      fetch(`${BACKEND_URL}/api/upbit/candles/days?market=${market}&count=14`).then(r => r.json()),
-      fetch(`${BACKEND_URL}/api/upbit/orderbook?markets=${market}`).then(r => r.json())
-    ]);
+    const data = await fetch(`${BACKEND_URL}/api/coin/${market}`).then(r => r.json());
+    const ticker = data.ticker;
+    const candles = data.candles;
+    const orderbook = data.orderbook;
 
     const t = ticker[0];
     const price = t.trade_price;
@@ -486,26 +474,21 @@ async function loadDetailData(market) {
     const lows = candles.map(c => c.low_price);
     const h52 = Math.max(...highs), l52 = Math.min(...lows);
     const pos52 = h52 !== l52 ? ((price - l52) / (h52 - l52) * 100).toFixed(1) : 50;
-
     const ob = orderbook[0];
     const totalBid = ob.orderbook_units.reduce((s,u) => s + u.bid_size, 0);
     const totalAsk = ob.orderbook_units.reduce((s,u) => s + u.ask_size, 0);
     const bidAskRatio = (totalBid / totalAsk).toFixed(2);
     const pressure = bidAskRatio > 1.2 ? '매수 우세' : bidAskRatio < 0.8 ? '매도 우세' : '균형';
-
-    // 체결강도 계산 (ask_size 대비 bid_size)
     const strength = (totalBid / (totalBid + totalAsk) * 100).toFixed(1);
     document.getElementById('detail-strength').textContent = strength + '%';
     document.getElementById('detail-strength').style.color = strength > 50 ? '#e74c3c' : '#3498db';
-
     const fg = calcFG(rsi, parseFloat(rate), parseFloat(volRatio));
     const todayRange = (((t.high_price - t.low_price) / t.low_price) * 100).toFixed(1);
 
-    marketCtx = { price, rate: parseFloat(rate), rsi, volRatio: parseFloat(volRatio), pos52: parseFloat(pos52), pressure, bidAskRatio: parseFloat(bidAskRatio), fg, todayRange: parseFloat(todayRange), strength: parseFloat(strength), high: t.high_price, low: t.low_price, prev: t.prev_closing_price };
+    marketCtx = { price, rate: parseFloat(rate), rsi, volRatio: parseFloat(volRatio), pos52: parseFloat(pos52), pressure, bidAskRatio: parseFloat(bidAskRatio), fg, todayRange: parseFloat(todayRange), strength: parseFloat(strength) };
 
     renderIndexGrid(rsi, volRatio, pos52, pressure, bidAskRatio, fg, todayRange, strength);
     renderOrderbook(ob.orderbook_units.slice(0, 5), price);
-    renderMiniIndex(rsi, fg, strength);
   } catch(e) { console.error(e); }
 }
 
@@ -606,49 +589,63 @@ async function loadChart(market, period) {
       return dt.getHours() + ':' + String(dt.getMinutes()).padStart(2,'0');
     });
 
+    const allPrices = reversed.flatMap(d => [d.opening_price, d.high_price, d.low_price, d.trade_price]);
+    const minPrice = Math.min(...allPrices);
+    const maxPrice = Math.max(...allPrices);
+    const padding = (maxPrice - minPrice) * 0.1;
+
     if (chartInstance) chartInstance.destroy();
     const ctx = document.getElementById('price-chart').getContext('2d');
 
-    if (period === 'days') {
-      // 캔들차트
-      const candleData = reversed.map(d => ({ x: d.candle_date_time_kst, o: d.opening_price, h: d.high_price, l: d.low_price, c: d.trade_price }));
-      chartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{
-            label: '캔들',
-            data: reversed.map(d => [d.opening_price, d.trade_price]),
-            backgroundColor: reversed.map(d => d.trade_price >= d.opening_price ? 'rgba(231,76,60,0.8)' : 'rgba(52,152,219,0.8)'),
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: '몸통',
+            data: reversed.map(d => [
+              Math.min(d.opening_price, d.trade_price),
+              Math.max(d.opening_price, d.trade_price)
+            ]),
+            backgroundColor: reversed.map(d => d.trade_price >= d.opening_price ? 'rgba(231,76,60,0.85)' : 'rgba(52,152,219,0.85)'),
             borderColor: reversed.map(d => d.trade_price >= d.opening_price ? '#e74c3c' : '#3498db'),
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { color: '#555', maxTicksLimit: 8, font: { size: 9 } }, grid: { color: '#1e1e2e' } },
-            y: { ticks: { color: '#555', font: { size: 9 }, callback: v => (v/1000000).toFixed(1) + 'M' }, grid: { color: '#1e1e2e' } }
+            borderWidth: 1,
+            borderSkipped: false,
+          },
+          {
+            label: '고저선',
+            data: reversed.map(d => [d.low_price, d.high_price]),
+            backgroundColor: reversed.map(d => d.trade_price >= d.opening_price ? 'rgba(231,76,60,0.4)' : 'rgba(52,152,219,0.4)'),
+            borderColor: 'transparent',
+            borderWidth: 0,
+            barPercentage: 0.15,
+            borderSkipped: false,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            ticks: { color: '#555', maxTicksLimit: period === 'days' ? 8 : 6, font: { size: 9 } },
+            grid: { color: '#1e1e2e' }
+          },
+          y: {
+            min: minPrice - padding,
+            max: maxPrice + padding,
+            ticks: { color: '#555', font: { size: 9 }, callback: v => {
+              if (v >= 1000000) return (v/1000000).toFixed(1) + 'M';
+              if (v >= 1000) return (v/1000).toFixed(0) + 'K';
+              return v;
+            }},
+            grid: { color: '#1e1e2e' }
           }
         }
-      });
-    } else {
-      // 선 그래프
-      const prices = reversed.map(d => d.trade_price);
-      chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: { labels, datasets: [{ data: prices, borderColor: '#378ADD', backgroundColor: 'rgba(55,138,221,0.1)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.3 }] },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { color: '#555', maxTicksLimit: 6, font: { size: 9 } }, grid: { color: '#1e1e2e' } },
-            y: { ticks: { color: '#555', font: { size: 9 }, callback: v => (v/1000000).toFixed(1) + 'M' }, grid: { color: '#1e1e2e' } }
-          }
-        }
-      });
-    }
+      }
+    });
   } catch(e) { console.error(e); }
 }
 
