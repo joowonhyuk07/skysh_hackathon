@@ -303,6 +303,10 @@ def get_stats():
         counts[r.emotion] = counts.get(r.emotion, 0) + 1
     return jsonify(counts)
 
+@app.route('/data/<filename>')
+def serve_data(filename):
+    return app.send_static_file(filename)
+
 
 @app.route('/')
 def index():

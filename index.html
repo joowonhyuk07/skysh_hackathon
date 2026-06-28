@@ -271,7 +271,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
     <!-- 타임머신 -->
     <div id="page-timemachine" class="page">
-      <div class="empty-state">⏳<br><br>타임머신 기능 준비 중이에요.</div>
+      <div id="timemachine-container" style="width:100%;height:calc(100vh - 110px);"></div>
     </div>
 
     <!-- 내 유형 -->
@@ -348,6 +348,8 @@ function showTopTab(tab, el) {
   if (el) el.classList.add('active');
   if (tab === 'mytype') renderMbti();
   if (tab === 'history') renderHistory();
+  if (tab === 'timemachine') loadTimeMachine();
+
 
   // 헤더 변경
   const headers = {
@@ -361,6 +363,14 @@ function showTopTab(tab, el) {
     document.querySelector('.header-title').textContent = h.title;
     document.querySelector('.header-sub').textContent = h.sub;
   }
+}
+
+function loadTimeMachine() {
+  const frame = document.getElementById('timemachine-frame');
+  if (frame.srcdoc !== '') return; // 이미 로드됐으면 스킵
+  
+  const timemachineHTML = `타임머신 HTML 전체 코드`;
+  frame.srcdoc = timemachineHTML;
 }
 
 // 하단 탭 전환
@@ -930,6 +940,512 @@ function renderHistory() {
 }
 
 window.onload = () => { renderCoinList(); };
+function loadTimeMachine() {
+  const container = document.getElementById('timemachine-container');
+  if (container.dataset.loaded) return;
+  container.dataset.loaded = 'true';
+  
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'width:100%;height:100%;border:none;';
+  iframe.srcdoc = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>타임머신</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; margin: 0; padding: 20px; background-color: #0a0a0f; color: #fff; }
+        .screen { display: none; max-width: 1100px; margin: 0 auto; background: #13131f; padding: 30px; border-radius: 12px; border: 1px solid #1e1e2e; }
+        .active { display: block; }
+        .setup-box { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto; }
+        select, input { padding: 10px; font-size: 16px; border-radius: 6px; border: 1px solid #1e1e2e; background: #0a0a0f; color: #fff; }
+        button { padding: 10px; font-size: 14px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; background: #185FA5; color: white; }
+        button:hover { background: #0C447C; }
+        .main-layout { display: flex; gap: 20px; margin-top: 15px; align-items: flex-start; }
+        .left-panel { flex: 1.4; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+        .right-panel { flex: 1; border: 1px solid #1e1e2e; border-radius: 8px; padding: 15px; background: #13131f; min-width: 300px; min-height: 480px; }
+        .chart-container { position: relative; border: 1px solid #1e1e2e; border-radius: 8px; padding: 10px; height: 300px; background: #13131f; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .tab-container { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 1px solid #1e1e2e; padding-bottom: 5px; }
+        .tab-btn { flex: 1; padding: 8px; font-size: 13px; background: #1e1e2e; color: #aaa; border: none; border-radius: 4px; cursor: pointer; }
+        .tab-btn.active-tab { background: #185FA5; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active-view { display: block; }
+        .orderbook-table { width: 100%; border-collapse: collapse; text-align: center; }
+        .orderbook-table td { padding: 8px; border-bottom: 1px solid #1e1e2e; font-size: 13px; }
+        .ask-row { color: #3498db; background: rgba(52,152,219,0.1); }
+        .bid-row { color: #e74c3c; background: rgba(231,76,60,0.1); }
+        .current-price-row { font-weight: bold; font-size: 16px; background: #1e1e2e; }
+        .order-input-box { margin-top: 12px; padding-top: 12px; border-top: 1px solid #1e1e2e; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .order-input-box input { width: 90px; padding: 6px; font-size: 13px; }
+        .news-list { list-style: none; padding: 0; margin: 0; max-height: 280px; overflow-y: auto; }
+        .news-item { padding: 10px; border-bottom: 1px solid #1e1e2e; background: #0a0a0f; margin-bottom: 4px; border-radius: 4px; cursor: pointer; border-left: 3px solid #378ADD; }
+        .news-item:hover { background: #1e1e2e; }
+        .news-time { font-size: 11px; color: #666; margin-bottom: 2px; }
+        .news-title { font-size: 12px; font-weight: bold; color: #ddd; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #13131f; border: 1px solid #1e1e2e; padding: 24px; border-radius: 12px; max-width: 420px; width: 90%; }
+        .modal-header { font-size: 15px; font-weight: bold; margin-bottom: 10px; color: #fff; border-bottom: 1px solid #1e1e2e; padding-bottom: 8px; }
+        .modal-body { font-size: 13px; line-height: 1.7; color: #aaa; margin-bottom: 16px; white-space: pre-wrap; }
+        .info-box { background: #0a0a0f; border: 1px solid #1e1e2e; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.8; }
+        .rsi-badge { background: #1e1e2e; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 13px; }
+        h2 { color: #E6F1FB; }
+        h3 { color: #378ADD; }
+        label { color: #aaa; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div id="screen-setup" class="screen active">
+    <h2 style="text-align:center;">⏳ 타임머신 모의투자</h2>
+    <p style="text-align:center;color:#666;font-size:13px;">과거 실제 데이터로 내 투자 심리를 테스트해보세요</p>
+    <div class="setup-box">
+        <label>시나리오 선택</label>
+        <select id="setup-scenario">
+            <option value="2022_FTX">📉 FTX 파산 폭락장 (2022년)</option>
+            <option value="2020_Boom">📈 대세 불장 대폭등기 (2020년)</option>
+            <option value="2026_May">📊 최신 거시경제 변동성장 (2026년)</option>
+        </select>
+        <label>시작 시드머니 (원)</label>
+        <input type="number" id="setup-seed" value="10000000" step="1000000">
+        <button id="start-btn">🚀 시뮬레이션 시작</button>
+    </div>
+</div>
+
+<div id="screen-main" class="screen">
+    <div class="chart-header">
+        <div class="rsi-badge" id="rsi-badge">RSI: --</div>
+        <select id="ticker-switch" style="background:#1e1e2e;color:#fff;border:1px solid #378ADD;padding:5px;border-radius:6px;"></select>
+    </div>
+    <div class="main-layout">
+        <div class="left-panel">
+            <div class="chart-container"><canvas id="mainChart"></canvas></div>
+            <div style="display:flex;gap:10px;align-items:center;background:#1e1e2e;padding:10px;border-radius:8px;">
+                <button id="play-btn" style="width:90px;">▶ 시작</button>
+                <div style="font-weight:bold;font-size:15px;flex:1;text-align:center;color:#aaa;" id="time-display">데이터 처리 중...</div>
+                <div style="display:flex;gap:4px;">
+                    <button id="speed-05" style="padding:6px 10px;font-size:12px;">0.5x</button>
+                    <button id="speed-10" style="padding:6px 10px;font-size:12px;">1x</button>
+                    <button id="speed-20" style="padding:6px 10px;font-size:12px;">2x</button>
+                </div>
+            </div>
+            <div class="info-box">
+                <div style="font-weight:bold;font-size:15px;color:#fff;" id="seed-info">예수금: -- 원</div>
+                <div style="display:flex;justify-content:space-between;margin-top:4px;">
+                    <span style="color:#aaa;">보유수량: <strong id="holding-qty" style="color:#fff;">0</strong></span>
+                    <span style="color:#aaa;">평단가: <strong id="avg-price" style="color:#fff;">0</strong> 원</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                    <span style="color:#aaa;">평가금액: <strong id="eval-value" style="color:#fff;">0</strong> 원</span>
+                    <span style="color:#aaa;">손익: <strong id="eval-profit" style="color:#fff;">0%</strong></span>
+                </div>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="tab-container">
+                <button id="tab-orderbook" class="tab-btn active-tab">호가창</button>
+                <button id="tab-news" class="tab-btn">뉴스 속보</button>
+            </div>
+            <div id="view-orderbook" class="tab-content active-view">
+                <p style="font-size:11px;color:#555;text-align:center;margin:0 0 8px;">가격 클릭 시 주문창에 자동 입력</p>
+                <table class="orderbook-table">
+                    <tr class="ask-row" id="ask-row-2"><td>매도2</td><td id="ask-qty-2">--</td><td id="ask-p-2">--</td></tr>
+                    <tr class="ask-row" id="ask-row-1"><td>매도1</td><td id="ask-qty-1">--</td><td id="ask-p-1">--</td></tr>
+                    <tr class="current-price-row"><td>현재가</td><td colspan="2" id="current-price" style="color:#fff;">로딩중...</td></tr>
+                    <tr class="bid-row" id="bid-row-1"><td>매수1</td><td id="bid-qty-1">--</td><td id="bid-p-1">--</td></tr>
+                    <tr class="bid-row" id="bid-row-2"><td>매수2</td><td id="bid-qty-2">--</td><td id="bid-p-2">--</td></tr>
+                </table>
+                <div class="order-input-box">
+                    <label style="font-size:12px;">가격</label>
+                    <input type="number" id="order-price" placeholder="가격">
+                    <label style="font-size:12px;">수량</label>
+                    <input type="number" id="order-qty" value="1" min="0.0001" step="0.01" style="width:60px;">
+                    <button id="buy-btn" style="background:#e74c3c;padding:6px 10px;">매수</button>
+                    <button id="sell-btn" style="background:#3498db;padding:6px 10px;">매도</button>
+                </div>
+            </div>
+            <div id="view-news" class="tab-content">
+                <ul class="news-list" id="news-container">
+                    <li style="text-align:center;color:#555;padding:20px;font-size:13px;">아직 뉴스가 없습니다.</li>
+                </ul>
+            </div>
+            <button id="end-btn" style="width:100%;margin-top:16px;background:#333;">종료 및 결과 보기</button>
+        </div>
+    </div>
+</div>
+
+<div id="screen-result" class="screen">
+    <h2 style="text-align:center;">📊 투자 성적표</h2>
+    <div class="main-layout">
+        <div class="left-panel">
+            <div class="chart-header" style="margin-bottom:8px;">
+                <span style="color:#aaa;font-size:14px;">복기 차트 (매수/매도 타점)</span>
+                <select id="result-ticker-switch" style="background:#1e1e2e;color:#fff;border:1px solid #378ADD;padding:4px;border-radius:6px;font-size:13px;"></select>
+            </div>
+            <div class="chart-container" style="height:280px;">
+                <canvas id="resultChart"></canvas>
+            </div>
+            <div class="info-box" style="margin-top:12px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #1e1e2e;">
+                    <span style="color:#aaa;">시작 시드</span>
+                    <span style="font-weight:bold;color:#fff;" id="res-start-seed">0 원</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                    <span style="color:#aaa;">최종 자산</span>
+                    <span style="font-weight:bold;color:#fff;" id="res-end-seed">0 원</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                    <span style="color:#aaa;">최종 수익률</span>
+                    <span style="font-size:18px;font-weight:bold;" id="res-roi">0%</span>
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <div style="font-size:13px;font-weight:500;color:#aaa;margin-bottom:6px;">체결 로그</div>
+                <div style="border:1px solid #1e1e2e;border-radius:8px;padding:10px;background:#0a0a0f;font-size:12px;color:#aaa;max-height:100px;overflow-y:auto;" id="trade-log-container"></div>
+            </div>
+        </div>
+        <div class="right-panel" style="border-left:3px solid #378ADD;">
+            <h3>✨ AI 매매 진단</h3>
+            <div id="ai-report-content" style="line-height:1.7;font-size:13px;color:#ccc;"><p style="color:#555;">분석 중...</p></div>
+        </div>
+    </div>
+    <button onclick="location.reload()" style="width:100%;margin-top:16px;background:#333;padding:12px;">처음으로</button>
+</div>
+
+<div id="news-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header" id="modal-title"></div>
+        <div class="modal-body" id="modal-body"></div>
+        <button id="modal-close-btn" style="width:100%;background:#333;">닫기</button>
+    </div>
+</div>
+
+<script type="module">
+    const BACKEND_URL = "https://skyshhackathon-production.up.railway.app";
+    
+    let state = {
+        current_index: 0, is_running: false, speed_multiplier: 1.0,
+        base_interval: 1000, seed: 0, start_seed: 0, holding_qty: 0, avg_price: 0,
+        pending_orders: [], selected_coin: "BTC", trade_logs: [], executed_points: []
+    };
+    let market_data = [];
+    let timerId;
+    let mainChart;
+    let resultChart;
+
+    document.getElementById("start-btn").addEventListener("click", startSimulation);
+    document.getElementById("play-btn").addEventListener("click", togglePlay);
+    document.getElementById("speed-05").addEventListener("click", () => setSpeed(0.5));
+    document.getElementById("speed-10").addEventListener("click", () => setSpeed(1.0));
+    document.getElementById("speed-20").addEventListener("click", () => setSpeed(2.0));
+    document.getElementById("tab-orderbook").addEventListener("click", () => switchTab('orderbook'));
+    document.getElementById("tab-news").addEventListener("click", () => switchTab('news'));
+    document.getElementById("buy-btn").addEventListener("click", () => executeTrade('BUY'));
+    document.getElementById("sell-btn").addEventListener("click", () => executeTrade('SELL'));
+    document.getElementById("end-btn").addEventListener("click", endSimulation);
+    document.getElementById("modal-close-btn").addEventListener("click", closeNewsModal);
+    document.getElementById("news-modal").addEventListener("click", closeNewsModal);
+    document.querySelector(".modal-content").addEventListener("click", e => e.stopPropagation());
+
+    document.getElementById("ticker-switch").addEventListener("change", e => {
+        state.selected_coin = e.target.value;
+        state.holding_qty = 0; state.avg_price = 0;
+        document.getElementById('holding-qty').innerText = 0;
+        document.getElementById('avg-price').innerText = 0;
+        if (mainChart) { mainChart.data.labels = []; mainChart.data.datasets.forEach(d => d.data = []); }
+        updateChartAndOrderbook(state.current_index);
+    });
+
+    document.getElementById("result-ticker-switch").addEventListener("change", e => {
+        renderResultChart(e.target.value);
+    });
+
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-view'));
+        if (tabName === 'orderbook') {
+            document.getElementById('tab-orderbook').classList.add('active-tab');
+            document.getElementById('view-orderbook').classList.add('active-view');
+        } else {
+            document.getElementById('tab-news').classList.add('active-tab');
+            document.getElementById('view-news').classList.add('active-view');
+        }
+    }
+
+    async function startSimulation() {
+        const scenarioKey = document.getElementById("setup-scenario").value;
+        const year = scenarioKey.split('_')[0];
+        try {
+            const module = await import(\`\${BACKEND_URL}/data/data_\${year}.js\`);
+            market_data = module.default;
+        } catch(error) {
+            alert("데이터 로드 실패: " + error.message);
+            return;
+        }
+
+        const allKeys = new Set();
+        market_data.forEach(row => Object.keys(row).forEach(k => allKeys.add(k)));
+        const availableCoins = Array.from(allKeys).filter(k => k.endsWith("_close")).map(k => k.replace("_close",""));
+
+        if (availableCoins.length === 0) { alert("코인 데이터 없음"); return; }
+
+        const selectBox = document.getElementById("ticker-switch");
+        const resSelectBox = document.getElementById("result-ticker-switch");
+        selectBox.innerHTML = ""; resSelectBox.innerHTML = "";
+        availableCoins.forEach(coin => {
+            selectBox.innerHTML += \`<option value="\${coin}">\${coin}</option>\`;
+            resSelectBox.innerHTML += \`<option value="\${coin}">\${coin}</option>\`;
+        });
+
+        state.selected_coin = availableCoins[0];
+        state.start_seed = parseInt(document.getElementById('setup-seed').value);
+        state.seed = state.start_seed;
+        document.getElementById('seed-info').innerText = \`예수금: \${state.seed.toLocaleString()} 원\`;
+
+        switchScreen('screen-main');
+        initChart();
+    }
+
+    function initChart() {
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        mainChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    { label: '현재가', data: [], borderColor: '#E6F1FB', borderWidth: 2, pointRadius: 0, tension: 0.1 },
+                    { label: 'BB상단', data: [], borderColor: 'rgba(231,76,60,0.5)', borderWidth: 1, borderDash: [4,4], pointRadius: 0, fill: false },
+                    { label: 'BB중간', data: [], borderColor: 'rgba(150,150,150,0.4)', borderWidth: 1, pointRadius: 0, fill: false },
+                    { label: 'BB하단', data: [], borderColor: 'rgba(52,152,219,0.5)', borderWidth: 1, borderDash: [4,4], pointRadius: 0, fill: false }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#aaa', font: { size: 11 } } } },
+                scales: {
+                    x: { grid: { color: '#1e1e2e' }, ticks: { color: '#555', maxTicksLimit: 6, font: { size: 10 } } },
+                    y: { position: 'right', grid: { color: '#1e1e2e' }, ticks: { color: '#555', font: { size: 10 } } }
+                }
+            }
+        });
+        state.current_index = 0;
+        updateChartAndOrderbook(0);
+    }
+
+    function updateChartAndOrderbook(index) {
+        if (index >= market_data.length) return endSimulation();
+        const row = market_data[index];
+        const coin = state.selected_coin;
+        const price = row[\`\${coin}_close\`];
+        if (!price) { state.current_index++; setTimeout(() => updateChartAndOrderbook(state.current_index), 50); return; }
+
+        mainChart.data.labels.push(row.date);
+        mainChart.data.datasets[0].data.push(price);
+        mainChart.data.datasets[1].data.push(row[\`\${coin}_upper\`] || null);
+        mainChart.data.datasets[2].data.push(row[\`\${coin}_middle\`] || null);
+        mainChart.data.datasets[3].data.push(row[\`\${coin}_lower\`] || null);
+        if (mainChart.data.labels.length > 30) {
+            mainChart.data.labels.shift();
+            mainChart.data.datasets.forEach(d => d.data.shift());
+        }
+        mainChart.update('none');
+
+        const rsi = row.rsi || row[\`\${coin}_rsi\`];
+        const rsiBadge = document.getElementById('rsi-badge');
+        rsiBadge.innerText = rsi ? \`RSI: \${parseFloat(rsi).toFixed(1)}\` : 'RSI: --';
+        rsiBadge.style.background = rsi >= 70 ? 'rgba(231,76,60,0.2)' : rsi <= 30 ? 'rgba(52,152,219,0.2)' : '#1e1e2e';
+        rsiBadge.style.color = rsi >= 70 ? '#e74c3c' : rsi <= 30 ? '#3498db' : '#aaa';
+
+        const gap = price > 1000000 ? 50000 : price > 100000 ? 1000 : 10;
+        document.getElementById('current-price').innerText = price.toLocaleString() + " 원";
+        document.getElementById('ask-p-2').innerText = (price + gap*2).toLocaleString();
+        document.getElementById('ask-p-1').innerText = (price + gap).toLocaleString();
+        document.getElementById('bid-p-1').innerText = (price - gap).toLocaleString();
+        document.getElementById('bid-p-2').innerText = (price - gap*2).toLocaleString();
+        document.getElementById('ask-qty-2').innerText = Math.floor(50 + (index%11)*8);
+        document.getElementById('ask-qty-1').innerText = Math.floor(40 + (index%7)*12);
+        document.getElementById('bid-qty-1').innerText = Math.floor(45 + (index%9)*10);
+        document.getElementById('bid-qty-2').innerText = Math.floor(30 + (index%13)*7);
+
+        document.getElementById('ask-row-2').onclick = () => document.getElementById('order-price').value = price + gap*2;
+        document.getElementById('ask-row-1').onclick = () => document.getElementById('order-price').value = price + gap;
+        document.getElementById('bid-row-1').onclick = () => document.getElementById('order-price').value = price - gap;
+        document.getElementById('bid-row-2').onclick = () => document.getElementById('order-price').value = price - gap*2;
+
+        const evalValue = state.holding_qty * price;
+        document.getElementById('eval-value').innerText = Math.round(evalValue).toLocaleString();
+        if (state.holding_qty > 0) {
+            const profitRatio = (((price - state.avg_price) / state.avg_price) * 100).toFixed(2);
+            const profitWon = Math.round((price - state.avg_price) * state.holding_qty);
+            const color = profitRatio > 0 ? '#e74c3c' : profitRatio < 0 ? '#3498db' : '#fff';
+            document.getElementById('eval-profit').innerText = \`\${profitRatio>0?'+':''}\${profitRatio}% (\${profitRatio>0?'+':''}\${profitWon.toLocaleString()}원)\`;
+            document.getElementById('eval-profit').style.color = color;
+        } else {
+            document.getElementById('eval-profit').innerText = "0%";
+            document.getElementById('eval-profit').style.color = '#fff';
+        }
+
+        if (row.hasNews) injectNews(row.date, row.newsTitle, row.newsContent);
+    }
+
+    function injectNews(time, title, content) {
+        const container = document.getElementById('news-container');
+        if (container.innerHTML.includes("아직 뉴스가 없습니다.")) container.innerHTML = "";
+        if (container.innerHTML.includes(title)) return;
+        const li = document.createElement('li');
+        li.className = 'news-item';
+        li.dataset.title = title; li.dataset.content = content;
+        li.onclick = function() { openNewsModal(this.dataset.title, this.dataset.content); };
+        li.innerHTML = \`<div class="news-time">\${time}</div><div class="news-title">\${title}</div>\`;
+        container.insertBefore(li, container.firstChild);
+    }
+
+    function openNewsModal(title, content) {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-body').innerText = content;
+        document.getElementById('news-modal').style.display = 'flex';
+    }
+    function closeNewsModal() { document.getElementById('news-modal').style.display = 'none'; }
+
+    function executeTrade(type) {
+        const p = parseInt(document.getElementById('order-price').value);
+        const q = parseFloat(document.getElementById('order-qty').value);
+        if (!p || !q) return alert("가격과 수량을 입력하세요.");
+        if (type === 'BUY' && p*q > state.seed) return alert("예수금 부족!");
+        if (type === 'SELL' && q > state.holding_qty) return alert("보유수량 부족!");
+        state.pending_orders.push({ type, price: p, qty: q, coin: state.selected_coin });
+        alert(\`[주문접수] \${p.toLocaleString()}원 \${q}개 \${type==='BUY'?'매수':'매도'} 대기\`);
+    }
+
+    function timeLoop() {
+        if (!state.is_running) return;
+        state.current_index++;
+        if (state.current_index >= market_data.length) return endSimulation();
+        const row = market_data[state.current_index];
+        document.getElementById('time-display').innerText = row.date;
+        requestAnimationFrame(() => {
+            updateChartAndOrderbook(state.current_index);
+            const price = row[\`\${state.selected_coin}_close\`];
+            if (price) checkPendingOrders(price);
+        });
+    }
+
+    function checkPendingOrders(currentPrice) {
+        for (let i = state.pending_orders.length - 1; i >= 0; i--) {
+            const order = state.pending_orders[i];
+            if (order.coin !== state.selected_coin) continue;
+            let triggered = false;
+            if (order.type === 'BUY' && currentPrice <= order.price && order.price*order.qty <= state.seed) {
+                const totalCost = state.avg_price*state.holding_qty + order.price*order.qty;
+                state.holding_qty += order.qty;
+                state.avg_price = Math.round(totalCost / state.holding_qty);
+                state.seed -= order.price * order.qty;
+                triggered = true;
+            } else if (order.type === 'SELL' && currentPrice >= order.price && order.qty <= state.holding_qty) {
+                state.holding_qty -= order.qty;
+                state.seed += currentPrice * order.qty;
+                if (state.holding_qty === 0) state.avg_price = 0;
+                triggered = true;
+            }
+            if (triggered) {
+                const log = \`[\${order.type}] \${order.coin} \${order.price.toLocaleString()}원 \${order.qty}개 체결\`;
+                state.trade_logs.push(log);
+                state.executed_points.push({ index: state.current_index, price: order.price, type: order.type, coin: order.coin });
+                alert(\`✨ 체결: \${log}\`);
+                state.pending_orders.splice(i, 1);
+                document.getElementById('seed-info').innerText = \`예수금: \${Math.round(state.seed).toLocaleString()} 원\`;
+                document.getElementById('holding-qty').innerText = state.holding_qty;
+                document.getElementById('avg-price').innerText = state.avg_price.toLocaleString();
+            }
+        }
+    }
+
+    function togglePlay() {
+        state.is_running = !state.is_running;
+        document.getElementById('play-btn').innerText = state.is_running ? "⏸ 일시정지" : "▶ 시작";
+        if (state.is_running) {
+            timerId = setInterval(timeLoop, state.base_interval / state.speed_multiplier);
+        } else {
+            clearInterval(timerId);
+        }
+    }
+
+    function setSpeed(speed) {
+        state.speed_multiplier = speed;
+        if (state.is_running) { clearInterval(timerId); timerId = setInterval(timeLoop, state.base_interval / speed); }
+    }
+
+    function endSimulation() {
+        state.is_running = false;
+        clearInterval(timerId);
+        const lastRow = market_data[state.current_index] || market_data[market_data.length-1];
+        const lastPrice = lastRow[\`\${state.selected_coin}_close\`] || 0;
+        const finalAsset = state.seed + state.holding_qty * lastPrice;
+        document.getElementById('res-start-seed').innerText = state.start_seed.toLocaleString() + " 원";
+        document.getElementById('res-end-seed').innerText = Math.round(finalAsset).toLocaleString() + " 원";
+        const roi = ((finalAsset - state.start_seed) / state.start_seed * 100).toFixed(2);
+        document.getElementById('res-roi').innerText = (roi >= 0 ? "+" : "") + roi + "%";
+        document.getElementById('res-roi').style.color = roi >= 0 ? '#e74c3c' : '#3498db';
+        document.getElementById('trade-log-container').innerHTML = state.trade_logs.length
+            ? state.trade_logs.map(l => \`<p style="margin:3px 0;">⏱ \${l}</p>\`).join("")
+            : "<p style='color:#555;margin:0;'>체결 없음</p>";
+        document.getElementById("result-ticker-switch").value = state.selected_coin;
+        switchScreen('screen-result');
+        renderResultChart(state.selected_coin);
+        setTimeout(() => {
+            const good = roi >= 0;
+            document.getElementById('ai-report-content').innerHTML = \`
+                <p><strong>1. 매매 경향:</strong> \${good ? '분할 매수 전략으로 안정적인 수익을 달성했어요.' : 'FOMO성 고점 진입 패턴이 관측돼요. 하락 임계점에서 손절 타이밍을 놓쳤어요.'}</p>
+                <p><strong>2. 리스크:</strong> 볼린저밴드 하단 이탈 시점의 추가 매수는 위험할 수 있어요. 분할 비율(%) 진입을 권장해요.</p>
+                <p><strong>3. 종합:</strong> RSI 과매도 구간 진입 시 분할 매수, 과매수 구간에서 분할 매도 전략이 가장 안전해요.</p>
+            \`;
+        }, 500);
+    }
+
+    function renderResultChart(coinTicker) {
+        const ctx = document.getElementById('resultChart').getContext('2d');
+        const labels = market_data.map(r => r.date);
+        const prices = market_data.map(r => r[\`\${coinTicker}_close\`]);
+        const buyPoints = new Array(market_data.length).fill(null);
+        const sellPoints = new Array(market_data.length).fill(null);
+        state.executed_points.forEach(pt => {
+            if (pt.coin === coinTicker) {
+                if (pt.type === 'BUY') buyPoints[pt.index] = pt.price;
+                if (pt.type === 'SELL') sellPoints[pt.index] = pt.price;
+            }
+        });
+        if (resultChart) resultChart.destroy();
+        resultChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    { label: '종가', data: prices, borderColor: '#378ADD', borderWidth: 2, pointRadius: 0, tension: 0.1, fill: false },
+                    { label: '매수', data: buyPoints, borderColor: '#e74c3c', backgroundColor: '#e74c3c', pointRadius: 6, showLine: false },
+                    { label: '매도', data: sellPoints, borderColor: '#3498db', backgroundColor: '#3498db', pointRadius: 6, showLine: false }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#aaa', font: { size: 11 } } } },
+                scales: {
+                    x: { grid: { color: '#1e1e2e' }, ticks: { color: '#555', maxTicksLimit: 8, font: { size: 10 } } },
+                    y: { position: 'right', grid: { color: '#1e1e2e' }, ticks: { color: '#555', font: { size: 10 } } }
+                }
+            }
+        });
+    }
+<\/script>
+</body>
+</html>`;
+  
+  container.appendChild(iframe);
+}
 </script>
 </body>
 </html>
